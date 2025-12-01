@@ -679,6 +679,7 @@
             text-align: center;
             padding: 15px;
             font-size: 1.1rem;
+
         }
     </style>
 </head>
@@ -707,7 +708,7 @@
 
                 <a href="https://www.getsfly.in" target="_blank" class="ad-link">
                     <img src="https://iili.io/fxMQVat.png" alt="Learn Digital Marketing" class="ad-banner"
-                        onerror="this.onerror=null; this.src='https://via.placeholder.com/200x300/8e2de2/4a00e0?text=Learn+with+MC+Deva';">
+                        onerror="this.onerror=null; this.src='https://via.placeholder.co/200x300/8e2de2/4a00e0?text=Learn+with+MC+Deva';">
                 </a>
             </div>
 
@@ -734,31 +735,67 @@
                             </div>
 
                             <!-- Home Page Ads -->
-                            <div class="home-ads">
-                                <a href="https://www.getsfly.in" target="_blank" class="home-ad-link">
-                                    <img src="https://iili.io/fxVhscB.md.png" alt="GetsFly Digital Marketing"
-                                        class="home-ad-banner"
-                                        onerror="this.onerror=null; this.src='https://iili.io/fxVhscB.md.png';">
-                                </a>
 
-                                <a href="https://www.getsfly.in" target="_blank" class="home-ad-link">
-                                    <img src="https://iili.io/fxVUE0u.md.png" alt="Tamil Learning"
-                                        class="home-ad-banner"
-                                        onerror="this.onerror=null; this.src='https://iili.io/fxVUE0u.md.png';">
-                                </a>
-
-                                <a href="https://www.getsfly.in" target="_blank" class="home-ad-link">
-                                    <img src="https://iili.io/fxVLAtj.md.png" alt="MC Deva Content"
-                                        class="home-ad-banner"
-                                        onerror="this.onerror=null; this.src='https://iili.io/fxVLAtj.md.png';">
-                                </a>
-                            </div>
 
                             <button type="submit" class="start-btn">
                                 <i class="fas fa-play"></i> Start Quiz
                             </button>
                         </form>
                     </div>
+                </div>
+                <!-- Portrait Home Ad (single) -->
+                <style>
+                    .home-ads {
+                        /* container — adjust placement as needed */
+                        display: flex;
+                        justify-content: center;
+                        /* center horizontally */
+                        align-items: flex-start;
+                        margin: 30px 0;
+                    }
+
+                    .portrait-ad {
+                        width: 100%;
+                        max-width: 300px;
+                        /* recommended max width for portrait ad */
+                        aspect-ratio: 1 / 2;
+                        /* portrait ratio (width : height = 1:2) -> e.g., 300 x 600 */
+                        border-radius: 8px;
+                        overflow: hidden;
+                        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+                        transition: transform .18s ease, box-shadow .18s ease;
+                        display: block;
+                        /* anchor behaves like a block-level card */
+                        text-decoration: none;
+                    }
+
+                    .portrait-ad img {
+                        width: 100%;
+                        height: 100%;
+                        object-fit: cover;
+                        display: block;
+                    }
+
+                    .portrait-ad:hover {
+                        transform: translateY(-4px);
+                        box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+                    }
+
+                    /* Responsive: on very small screens keep it smaller */
+                    @media (max-width: 360px) {
+                        .portrait-ad {
+                            max-width: 220px;
+                            aspect-ratio: 1 / 2;
+                        }
+                    }
+                </style>
+
+                <div class="home-ads">
+                    <a href="https://www.getsfly.in" target="_blank" rel="noopener" class="portrait-ad"
+                        aria-label="GetsFly Digital Marketing">
+                        <img src="https://i.ibb.co/chRYBFL2/878-D1875-554-D-4-E5-F-AE0-A-85906332-C863.png"
+                            alt="GetsFly Digital Marketing" class="home-ad-banner" loading="lazy">
+                    </a>
                 </div>
 
                 <!-- Quiz Page -->
