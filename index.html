@@ -63,11 +63,6 @@
             background-size: 24px 24px; z-index: -1;
         }
 
-        body.theme-autumn { background: #1c0f0e; }
-        .leaf-container { position: fixed; inset: 0; pointer-events: none; z-index: 1000; display: none; }
-        body.theme-autumn .leaf-container { display: block; }
-        .leaf { position: absolute; color: #d97706; animation: fall linear infinite; opacity: 0.6; }
-
         body.theme-cyber { background: #000; }
         body.theme-cyber::before {
             content: ''; position: fixed; inset: 0;
@@ -83,7 +78,7 @@
             margin: 120px auto 40px auto;
             position: relative;
             flex-grow: 1;
-            transition: transform 1.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+            transition: transform 1s cubic-bezier(0.645, 0.045, 0.355, 1);
             transform-style: preserve-3d;
         }
 
@@ -149,11 +144,18 @@
             100% { transform: scale(1.5); opacity: 0; }
         }
 
+        /* MOBILE OPTIMIZATIONS */
         @media (max-width: 1024px) {
-            .nav-arrow.left { left: 10px; top: auto; bottom: -80px; transform: none; }
-            .nav-arrow.right { right: 10px; top: auto; bottom: -80px; transform: none; }
-            .passport-frame { margin-top: 140px; margin-bottom: 140px; }
+            .passport-frame { 
+                margin-top: 130px; 
+                margin-bottom: 140px; 
+                transform: scale(0.88);
+                transform-origin: top center;
+            }
+            .nav-arrow.left { left: calc(50% - 60px); top: auto; bottom: -80px; transform: none; }
+            .nav-arrow.right { right: calc(50% - 60px); top: auto; bottom: -80px; transform: none; }
         }
+        
         @media (min-width: 1025px) {
             .nav-arrow.left { left: -75px; }
             .nav-arrow.right { right: -75px; }
@@ -161,14 +163,6 @@
 
         .edit-ui { display: block; }
         body.preview-mode .edit-ui { display: none !important; }
-
-        #exit-preview {
-            display: none; position: fixed; bottom: 24px; right: 24px; z-index: 2000;
-            background: var(--accent); color: #000; padding: 12px 28px; border-radius: 99px;
-            font-weight: 800; text-transform: uppercase; letter-spacing: 1px; font-size: 10px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5); cursor: pointer;
-        }
-        body.preview-mode #exit-preview { display: block; }
 
         .accent-text { color: var(--accent) !important; }
         .accent-bg { background-color: var(--accent) !important; }
@@ -188,21 +182,27 @@
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             backface-visibility: hidden; z-index: 5;
         }
+
+        #toast {
+            position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%) translateY(100px);
+            background: var(--accent); color: #000; padding: 10px 24px; border-radius: 50px;
+            font-weight: 700; font-size: 11px; text-transform: uppercase; z-index: 3000;
+            opacity: 0; transition: 0.4s; pointer-events: none;
+        }
+        #toast.visible { transform: translateX(-50%) translateY(0); opacity: 1; }
     </style>
 </head>
 <body class="theme-space acc-green">
 
-    <div class="leaf-container" id="leaf-layer"></div>
-
     <div id="loading-overlay">
         <div class="brand text-3xl font-bold tracking-[0.6em] mb-4 text-white">SKILLPORT</div>
         <div class="w-32 h-0.5 bg-white/10 relative overflow-hidden">
-            <div class="absolute inset-0 accent-bg w-1/2 animate-[loading_1.5s_infinite_linear]"></div>
+            <div class="absolute inset-0 accent-bg w-1/2 animate-[loading_1s_infinite_linear]"></div>
         </div>
     </div>
     <style> @keyframes loading { 0% { transform: translateX(-100%); } 100% { transform: translateX(200%); } } </style>
 
-    <button id="exit-preview" onclick="setMode('edit')">Exit Preview Mode</button>
+    <div id="toast">Data Synchronized</div>
 
     <!-- UI CONTROLS -->
     <nav class="fixed top-4 left-1/2 -translate-x-1/2 z-[300] flex flex-col items-center gap-3 px-6 py-4 bg-black/80 backdrop-blur-3xl rounded-[32px] border border-white/10 edit-ui w-max max-w-[95vw] shadow-2xl">
@@ -211,7 +211,6 @@
                 <button onclick="setTheme('space')" class="w-8 h-8 rounded-xl bg-indigo-950/50 border border-white/10 flex items-center justify-center hover:scale-110 transition-transform"><i class="fas fa-user-astronaut text-[10px] text-white"></i></button>
                 <button onclick="setTheme('pro')" class="w-8 h-8 rounded-xl bg-white border border-zinc-200 flex items-center justify-center hover:scale-110 transition-transform"><i class="fas fa-briefcase text-[10px] text-zinc-800"></i></button>
                 <button onclick="setTheme('doodle')" class="w-8 h-8 rounded-xl bg-[#fffceb] border border-zinc-400 flex items-center justify-center hover:scale-110 transition-transform"><i class="fas fa-pen-nib text-[10px] text-zinc-800"></i></button>
-                <button onclick="setTheme('autumn')" class="w-8 h-8 rounded-xl bg-[#d97706] border border-white/10 flex items-center justify-center hover:scale-110 transition-transform"><i class="fas fa-leaf text-[10px] text-white"></i></button>
                 <button onclick="setTheme('cyber')" class="w-8 h-8 rounded-xl bg-black border border-green-500 flex items-center justify-center hover:scale-110 transition-transform"><i class="fas fa-bolt text-[10px] text-green-500"></i></button>
             </div>
             <div class="w-px h-6 bg-white/10 mx-1"></div>
@@ -231,8 +230,8 @@
 
     <main class="passport-frame" id="main-frame">
         <!-- Navigation Dock -->
-        <button class="nav-arrow left" onclick="prevPage()"><i class="fas fa-arrow-left"></i></button>
-        <button class="nav-arrow right" onclick="nextPage()"><i class="fas fa-arrow-right"></i></button>
+        <button class="nav-arrow left" onclick="prevPage()" aria-label="Previous Page"><i class="fas fa-arrow-left"></i></button>
+        <button class="nav-arrow right" onclick="nextPage()" aria-label="Next Page"><i class="fas fa-arrow-right"></i></button>
 
         <!-- PAGE 1: IDENTITY -->
         <section id="page-profile" class="page-container active">
@@ -285,7 +284,7 @@
         <!-- PAGE 2: SKILL SET -->
         <section id="page-ecosystem" class="page-container">
             <div class="p-10 lg:p-20 h-full flex flex-col">
-                <div class="flex flex-col lg:row-span-1 lg:flex-row justify-between items-start lg:items-center gap-6 mb-16 lg:mb-20">
+                <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-16 lg:mb-20">
                     <h2 class="text-4xl lg:text-6xl font-bold tracking-tighter uppercase">Skill Set</h2>
                     <button onclick="addSkill()" class="edit-ui px-8 py-3 border accent-border accent-text rounded-full text-[11px] font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-all">+ Inject Data Node</button>
                 </div>
@@ -345,8 +344,8 @@
                 </div>
 
                 <div class="mt-20 pt-10 border-t border-white/10 flex flex-col lg:flex-row justify-between items-center gap-8">
-                    <span class="text-[11px] font-bold tracking-[0.6em] opacity-40">ACK: JOURNEY_LOG_COMPLETE</span>
-                    <div class="brand text-3xl font-bold tracking-tighter opacity-70">SKILLPORT<span class="accent-text">.</span></div>
+                    <span class="text-[11px] font-bold tracking-[0.6em] opacity-40 uppercase">Acknowledge: Identity deployment complete</span>
+                    <div class="brand text-3xl font-bold tracking-tighter opacity-70 text-white">SKILLPORT<span class="accent-text">.</span></div>
                 </div>
             </div>
         </section>
@@ -376,16 +375,16 @@
     </div>
 
     <!-- FOOTER TOOLBAR -->
-    <div class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[200] flex items-center gap-6 lg:gap-12 px-8 py-5 bg-black/90 backdrop-blur-3xl rounded-full border border-white/10 shadow-2xl edit-ui w-max max-w-[95vw]">
-        <button onclick="syncLocal()" class="text-[10px] lg:text-[11px] font-bold uppercase tracking-widest flex items-center gap-3 hover:accent-text transition-colors">
+    <div class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[200] flex items-center gap-6 lg:gap-12 px-8 py-4 bg-black/90 backdrop-blur-3xl rounded-full border border-white/10 shadow-2xl edit-ui w-max max-w-[95vw]">
+        <button onclick="syncLocal()" class="text-[9px] lg:text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 hover:accent-text transition-colors">
             <i class="fas fa-sync-alt" id="sync-icon"></i> <span>Sync</span>
         </button>
-        <div class="w-px h-6 bg-white/20"></div>
-        <button onclick="exportDossier()" class="text-[10px] lg:text-[11px] font-bold uppercase tracking-widest flex items-center gap-3 hover:accent-text transition-colors">
+        <div class="w-px h-5 bg-white/20"></div>
+        <button onclick="exportDossier()" class="text-[9px] lg:text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 hover:accent-text transition-colors">
             <i class="fas fa-file-pdf"></i> <span>PDF</span>
         </button>
-        <div class="w-px h-6 bg-white/20"></div>
-        <button onclick="showQR()" class="text-[10px] lg:text-[11px] font-bold uppercase tracking-widest flex items-center gap-3 hover:accent-text transition-colors">
+        <div class="w-px h-5 bg-white/20"></div>
+        <button onclick="showQR()" class="text-[9px] lg:text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 hover:accent-text transition-colors">
             <i class="fas fa-qrcode"></i> <span>Share</span>
         </button>
     </div>
@@ -406,22 +405,9 @@
         let activeType = null, activeIdx = null;
 
         window.onload = () => {
-            loadState(); refreshUI(); showPage(pages[currentPageIndex]); initAutumnLeaves();
+            loadState(); refreshUI(); showPage(pages[currentPageIndex]);
             setTimeout(() => { document.getElementById('loading-overlay').style.opacity = '0'; setTimeout(() => document.getElementById('loading-overlay').style.display = 'none', 500); }, 1200);
         };
-
-        function initAutumnLeaves() {
-            const container = document.getElementById('leaf-layer');
-            for(let i = 0; i < 25; i++) {
-                const leaf = document.createElement('i');
-                leaf.className = 'fas fa-leaf leaf';
-                leaf.style.left = Math.random() * 100 + 'vw';
-                leaf.style.animationDuration = (Math.random() * 6 + 4) + 's';
-                leaf.style.animationDelay = (Math.random() * 10) + 's';
-                leaf.style.fontSize = (Math.random() * 20 + 10) + 'px';
-                container.appendChild(leaf);
-            }
-        }
 
         function showPage(id) {
             currentPageIndex = pages.indexOf(id);
@@ -459,17 +445,17 @@
 
         function renderSkills() {
             const cont = document.getElementById('skill-nodes');
-            cont.innerHTML = state.skills.map((s, i) => `<div onclick="openModal('skills', ${i})" class="bg-white/5 border border-white/10 rounded-3xl p-8 min-w-[160px] text-center cursor-pointer hover:border-accent transition-all group shadow-xl"><i class="fas ${s.icon} text-3xl accent-text opacity-40 group-hover:opacity-100 mb-6 transition-all"></i><p class="text-xs font-bold uppercase tracking-widest">${s.name}</p></div>`).join('') || '<p class="opacity-10 text-[11px] uppercase tracking-[0.5em]">Network Offline</p>';
+            cont.innerHTML = state.skills.map((s, i) => `<div onclick="openModal('skills', ${i})" class="bg-white/5 border border-white/10 rounded-3xl p-8 min-w-[140px] md:min-w-[160px] text-center cursor-pointer hover:border-accent transition-all group shadow-xl"><i class="fas ${s.icon} text-2xl md:text-3xl accent-text opacity-40 group-hover:opacity-100 mb-4 md:mb-6 transition-all"></i><p class="text-xs font-bold uppercase tracking-widest">${s.name}</p></div>`).join('') || '<p class="opacity-10 text-[11px] uppercase tracking-[0.5em]">Network Offline</p>';
         }
 
         function renderExperience() {
             const cont = document.getElementById('path-timeline');
-            cont.innerHTML = state.experience.map((e, i) => `<div onclick="openModal('experience', ${i})" class="group flex gap-8 lg:gap-12 cursor-pointer hover:translate-x-3 transition-all"><div class="w-24 lg:w-32 shrink-0 text-[11px] font-bold accent-text pt-1 mono uppercase tracking-tighter">${e.time || '20XX'}</div><div class="pb-12 border-l-2 border-white/10 pl-8 lg:pl-12 relative"><div class="absolute -left-[11px] top-1.5 w-5 h-5 rounded-full bg-white group-hover:bg-accent group-hover:scale-125 transition-all"></div><h4 class="text-2xl lg:text-3xl font-bold tracking-tight mb-3 uppercase">${e.role || 'ROLE'}</h4><p class="text-sm opacity-40 mb-6 font-medium tracking-wide">${e.company || 'COMPANY'}</p><p class="text-xs lg:text-sm opacity-60 italic leading-relaxed max-w-2xl">${e.desc || '...'}</p></div></div>`).join('') || '<p class="opacity-10 py-10 uppercase tracking-[0.5em]">No Data Logs</p>';
+            cont.innerHTML = state.experience.map((e, i) => `<div onclick="openModal('experience', ${i})" class="group flex gap-8 lg:gap-12 cursor-pointer hover:translate-x-3 transition-all"><div class="w-24 lg:w-32 shrink-0 text-[11px] font-bold accent-text pt-1 mono uppercase tracking-tighter">${e.time || '20XX'}</div><div class="pb-12 border-l-2 border-white/10 pl-8 lg:pl-12 relative"><div class="absolute -left-[11px] top-1.5 w-5 h-5 rounded-full bg-white group-hover:bg-accent group-hover:scale-125 transition-all"></div><h4 class="text-2xl lg:text-3xl font-bold tracking-tight mb-3 uppercase">${e.role || 'ROLE'}</h4><p class="text-sm opacity-40 mb-6 font-medium tracking-wide">${e.company || 'COMPANY'}</p><p class="text-[11px] opacity-60 italic leading-relaxed max-w-2xl">${e.desc || '...'}</p></div></div>`).join('') || '<p class="opacity-10 py-10 uppercase tracking-[0.5em]">No Data Logs</p>';
         }
 
         function renderAssets() {
             const cont = document.getElementById('asset-grid');
-            cont.innerHTML = state.assets.map((a, i) => `<div onclick="openModal('assets', ${i})" class="bg-white/5 border border-white/10 p-8 lg:p-12 rounded-[40px] hover:border-accent transition-all cursor-pointer group shadow-2xl"><i class="fas fa-file-code text-3xl opacity-20 accent-text mb-10"></i><h4 class="text-xl font-bold mb-3 uppercase tracking-tight">${a.name || 'ASSET'}</h4><p class="text-[13px] opacity-40 mb-8 leading-relaxed font-light">${a.desc || '...'}</p><div class="flex items-center gap-3 text-[11px] font-bold accent-text uppercase tracking-widest"><i class="fas fa-check-circle"></i> VERIFIED_NODE</div></div>`).join('') || '<p class="opacity-10 py-10 col-span-full text-center tracking-[0.5em]">No Assets Found</p>';
+            cont.innerHTML = state.assets.map((a, i) => `<div onclick="openModal('assets', ${i})" class="bg-white/5 border border-white/10 p-8 lg:p-12 rounded-[40px] hover:border-accent transition-all cursor-pointer group shadow-2xl"><i class="fas fa-file-code text-2xl md:text-3xl opacity-20 accent-text mb-10"></i><h4 class="text-xl font-bold mb-3 uppercase tracking-tight">${a.name || 'ASSET'}</h4><p class="text-[13px] opacity-40 mb-8 leading-relaxed font-light">${a.desc || '...'}</p><div class="flex items-center gap-3 text-[11px] font-bold accent-text uppercase tracking-widest"><i class="fas fa-check-circle"></i> VERIFIED_NODE</div></div>`).join('') || '<p class="opacity-10 py-10 col-span-full text-center tracking-[0.5em]">No Assets Found</p>';
         }
 
         function renderOutro() {
@@ -505,6 +491,12 @@
 
         function handleImage(e) { const file = e.target.files[0]; if(file) { const reader = new FileReader(); reader.onload = (ev) => { state.user.avatar = ev.target.result; refreshUI(); saveState(); }; reader.readAsDataURL(file); } }
 
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.innerText = msg; t.classList.add('visible');
+            setTimeout(() => t.classList.remove('visible'), 3000);
+        }
+
         function saveState() {
             state.user.name = document.getElementById('user-name').innerText;
             state.user.role = document.getElementById('user-role').innerText;
@@ -512,12 +504,12 @@
             state.user.status = document.getElementById('user-status').innerText;
             state.user.loc = document.getElementById('user-loc').innerText;
             state.user.lang = document.getElementById('user-lang').innerText;
-            localStorage.setItem('skillport_v13_final', JSON.stringify(state));
+            localStorage.setItem('skillport_v15_no_leaves', JSON.stringify(state));
         }
 
-        function loadState() { const raw = localStorage.getItem('skillport_v13_final'); if(raw) { Object.assign(state, JSON.parse(raw)); applyFullTheme(); setMode(state.mode); } }
+        function loadState() { const raw = localStorage.getItem('skillport_v15_no_leaves'); if(raw) { Object.assign(state, JSON.parse(raw)); applyFullTheme(); setMode(state.mode); } }
 
-        function syncLocal() { saveState(); const icon = document.getElementById('sync-icon'); icon.classList.add('fa-spin'); setTimeout(() => icon.classList.remove('fa-spin'), 800); }
+        function syncLocal() { saveState(); const icon = document.getElementById('sync-icon'); icon.classList.add('fa-spin'); setTimeout(() => { icon.classList.remove('fa-spin'); showToast('Identity Broadcasted'); }, 800); }
 
         async function exportDossier() {
             const frame = document.querySelector('.passport-frame');
