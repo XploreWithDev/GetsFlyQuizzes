@@ -73,8 +73,8 @@
         /* --- PASSPORT ARCHITECTURE --- */
         .passport-frame {
             perspective: 2500px;
-            width: 92%;
-            max-width: 1100px;
+            width: 85%; /* Reduced width to accommodate exterior arrows */
+            max-width: 1000px;
             margin: 120px auto 40px auto;
             position: relative;
             flex-grow: 1;
@@ -87,7 +87,7 @@
         .page-container {
             width: 100%;
             height: 100%;
-            min-height: 75dvh;
+            min-height: 70dvh;
             background: var(--page-bg);
             border: 2px solid var(--border);
             border-radius: 32px;
@@ -113,13 +113,13 @@
             100% { transform: rotateY(0deg) translateX(0); opacity: 1; }
         }
 
-        /* NAVIGATION ARROWS */
+        /* EXTERIOR NAVIGATION ARROWS */
         .nav-arrow {
-            position: absolute;
+            position: fixed;
             top: 50%;
             transform: translateY(-50%);
-            width: 50px;
-            height: 50px;
+            width: 60px;
+            height: 60px;
             background: rgba(0,0,0,0.85);
             border: 2px solid var(--accent);
             border-radius: 50%;
@@ -144,21 +144,26 @@
             100% { transform: scale(1.5); opacity: 0; }
         }
 
-        /* MOBILE OPTIMIZATIONS */
+        /* Arrow Placement Outside Frame */
+        .nav-arrow.left { left: 40px; }
+        .nav-arrow.right { right: 40px; }
+
+        /* MOBILE OPTIMIZATIONS: ZOOM OUT & ARROW STACK */
         @media (max-width: 1024px) {
             .passport-frame { 
+                width: 90%;
                 margin-top: 130px; 
                 margin-bottom: 140px; 
-                transform: scale(0.88);
+                transform: scale(0.85); /* Proper zoom out for mobile fit */
                 transform-origin: top center;
             }
-            .nav-arrow.left { left: calc(50% - 60px); top: auto; bottom: -80px; transform: none; }
-            .nav-arrow.right { right: calc(50% - 60px); top: auto; bottom: -80px; transform: none; }
+            .nav-arrow { top: auto; bottom: 100px; transform: none; width: 50px; height: 50px; }
+            .nav-arrow.left { left: calc(50% - 70px); }
+            .nav-arrow.right { right: calc(50% - 70px); }
         }
         
         @media (min-width: 1025px) {
-            .nav-arrow.left { left: -75px; }
-            .nav-arrow.right { right: -75px; }
+            /* Keep exterior side placement for laptops */
         }
 
         .edit-ui { display: block; }
@@ -176,7 +181,7 @@
         [contenteditable="true"]:focus { outline: none; background: rgba(128,128,128,0.1); border-radius: 4px; padding: 0 4px; }
         
         .back-cover {
-            width: 100%; height: 100%; min-height: 75dvh; background: #080808;
+            width: 100%; height: 100%; min-height: 70dvh; background: #080808;
             border: 3px solid var(--accent); border-radius: 32px;
             position: absolute; top: 0; left: 0; transform: rotateY(180deg);
             display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -228,11 +233,12 @@
         </div>
     </nav>
 
-    <main class="passport-frame" id="main-frame">
-        <!-- Navigation Dock -->
-        <button class="nav-arrow left" onclick="prevPage()" aria-label="Previous Page"><i class="fas fa-arrow-left"></i></button>
-        <button class="nav-arrow right" onclick="nextPage()" aria-label="Next Page"><i class="fas fa-arrow-right"></i></button>
+    <!-- Navigation Arrows - FLOATING OUTSIDE -->
+    <button class="nav-arrow left" onclick="prevPage()" aria-label="Previous Page"><i class="fas fa-arrow-left"></i></button>
+    <button class="nav-arrow right" onclick="nextPage()" aria-label="Next Page"><i class="fas fa-arrow-right"></i></button>
 
+    <main class="passport-frame" id="main-frame">
+        
         <!-- PAGE 1: IDENTITY -->
         <section id="page-profile" class="page-container active">
             <div class="grid grid-cols-1 lg:grid-cols-2 h-full">
@@ -491,12 +497,6 @@
 
         function handleImage(e) { const file = e.target.files[0]; if(file) { const reader = new FileReader(); reader.onload = (ev) => { state.user.avatar = ev.target.result; refreshUI(); saveState(); }; reader.readAsDataURL(file); } }
 
-        function showToast(msg) {
-            const t = document.getElementById('toast');
-            t.innerText = msg; t.classList.add('visible');
-            setTimeout(() => t.classList.remove('visible'), 3000);
-        }
-
         function saveState() {
             state.user.name = document.getElementById('user-name').innerText;
             state.user.role = document.getElementById('user-role').innerText;
@@ -504,12 +504,18 @@
             state.user.status = document.getElementById('user-status').innerText;
             state.user.loc = document.getElementById('user-loc').innerText;
             state.user.lang = document.getElementById('user-lang').innerText;
-            localStorage.setItem('skillport_v15_no_leaves', JSON.stringify(state));
+            localStorage.setItem('skillport_v16_zoom_out', JSON.stringify(state));
         }
 
-        function loadState() { const raw = localStorage.getItem('skillport_v15_no_leaves'); if(raw) { Object.assign(state, JSON.parse(raw)); applyFullTheme(); setMode(state.mode); } }
+        function loadState() { const raw = localStorage.getItem('skillport_v16_zoom_out'); if(raw) { Object.assign(state, JSON.parse(raw)); applyFullTheme(); setMode(state.mode); } }
 
-        function syncLocal() { saveState(); const icon = document.getElementById('sync-icon'); icon.classList.add('fa-spin'); setTimeout(() => { icon.classList.remove('fa-spin'); showToast('Identity Broadcasted'); }, 800); }
+        function syncLocal() { saveState(); const icon = document.getElementById('sync-icon'); icon.classList.add('fa-spin'); setTimeout(() => icon.classList.remove('fa-spin'), 800); }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.innerText = msg; t.classList.add('visible');
+            setTimeout(() => t.classList.remove('visible'), 3000);
+        }
 
         async function exportDossier() {
             const frame = document.querySelector('.passport-frame');
