@@ -34,6 +34,14 @@
         body.theme-cyber { background: #000; --page-bg: #050505; --border: var(--accent); }
         body.theme-doodle { font-family: 'Kalam', cursive; background: #fffceb; --text: #1a1a1a; --page-bg: #ffffff; --border: #1a1a1a; }
 
+        /* BRIGHT MODE OVERRIDE */
+        body.light-mode:not(.theme-pro):not(.theme-doodle) {
+            --bg: #f8fafc;
+            --page-bg: #ffffff;
+            --text: #0f172a;
+            --border: rgba(15, 23, 42, 0.1);
+        }
+
         * { -webkit-tap-highlight-color: transparent !important; outline: none !important; }
 
         body {
@@ -52,10 +60,10 @@
             height: 100dvh;
             position: relative;
             transform-style: preserve-3d;
-            transition: transform 1s cubic-bezier(0.645, 0.045, 0.355, 1);
+            transition: transform 1.2s cubic-bezier(0.645, 0.045, 0.355, 1);
         }
 
-        .passport-frame.closed { transform: rotateY(-180deg); }
+        .passport-frame.closed { transform: rotateY(-180deg) scale(0.85); }
 
         .page-container {
             width: 100%;
@@ -98,7 +106,6 @@
         }
         body.preview-mode #exit-preview { display: block; }
 
-        /* ACTION MENU & DRAWER */
         .drawer {
             position: fixed; top: 0; right: -320px; width: 300px; height: 100%;
             background: rgba(10, 10, 10, 0.98); backdrop-filter: blur(30px);
@@ -115,11 +122,10 @@
         }
         .action-popup.active { display: flex; }
 
-        /* RECTANGLE BUTTONS */
         .rect-btn {
             padding: 12px 20px; border-radius: 12px; border: 1px solid var(--border);
             background: rgba(255,255,255,0.05); font-size: 10px; font-weight: 700;
-            text-transform: uppercase; transition: 0.2s; color: #fff;
+            text-transform: uppercase; transition: 0.2s; color: #fff; text-align: left;
         }
         .rect-btn:hover { border-color: var(--accent); background: rgba(255,255,255,0.1); }
 
@@ -158,8 +164,10 @@
         @media (max-width: 1024px) {
             .desktop-only { display: none !important; }
             .mobile-only { display: flex !important; }
-            .passport-frame { transform-origin: top center; }
         }
+
+        /* PDF Export Styling */
+        .pdf-export-mode #user-img { filter: none !important; grayscale: 0 !important; }
     </style>
 </head>
 <body class="theme-space acc-green">
@@ -170,7 +178,7 @@
     </div>
     <style> @keyframes loading { 0% { transform: translateX(-100%); } 100% { transform: translateX(200%); } } </style>
 
-    <div id="toast">Changes Saved</div>
+    <div id="toast">Identity Synchronized</div>
 
     <!-- PERSISTENT OVERLAYS -->
     <button id="exit-preview" onclick="setMode('edit')"><i class="fas fa-edit mr-2"></i> Leave Preview</button>
@@ -179,18 +187,20 @@
     <nav class="desktop-only fixed top-0 w-full z-[3000] px-10 py-6 flex justify-between items-center bg-black/40 backdrop-blur-xl border-b border-white/5">
         <div class="brand text-2xl font-bold tracking-tighter text-white">SKILLPORT<span class="accent-text">.</span></div>
         <div class="flex items-center gap-6">
-            <div class="flex gap-3">
-                <button onclick="setTheme('space')" class="text-white/40 hover:text-white transition-colors"><i class="fas fa-user-astronaut"></i></button>
-                <button onclick="setTheme('pro')" class="text-white/40 hover:text-white transition-colors"><i class="fas fa-briefcase"></i></button>
-                <button onclick="setTheme('cyber')" class="text-white/40 hover:text-white transition-colors"><i class="fas fa-bolt"></i></button>
+            <div class="flex gap-3 items-center">
+                <button onclick="setTheme('space')" class="text-white/40 hover:text-white transition-colors" title="Space"><i class="fas fa-user-astronaut"></i></button>
+                <button onclick="setTheme('pro')" class="text-white/40 hover:text-white transition-colors" title="Professional"><i class="fas fa-briefcase"></i></button>
+                <button onclick="setTheme('cyber')" class="text-white/40 hover:text-white transition-colors" title="Cyber"><i class="fas fa-bolt"></i></button>
                 <div class="w-px h-4 bg-white/10 mx-2"></div>
                 <button onclick="setAccent('green')" class="w-4 h-4 rounded-full bg-[#00ff41] border border-white/20 hover:scale-125 transition-all"></button>
                 <button onclick="setAccent('blue')" class="w-4 h-4 rounded-full bg-[#00d2ff] border border-white/20 hover:scale-125 transition-all"></button>
                 <button onclick="setAccent('gold')" class="w-4 h-4 rounded-full bg-[#d4af37] border border-white/20 hover:scale-125 transition-all"></button>
+                <div class="w-px h-4 bg-white/10 mx-2"></div>
+                <button onclick="toggleLuminance()" class="text-white/40 hover:text-white transition-colors"><i class="fas fa-circle-half-stroke"></i></button>
             </div>
             <div class="flex bg-white/5 p-1 rounded-xl border border-white/10">
-                <button onclick="setMode('edit')" id="pc-btn-edit" class="px-6 py-1.5 rounded-lg text-[10px] font-bold uppercase transition-all bg-white/10">Build</button>
-                <button onclick="setMode('preview')" id="pc-btn-preview" class="px-6 py-1.5 rounded-lg text-[10px] font-bold uppercase transition-all">Live</button>
+                <button onclick="setMode('edit')" id="pc-btn-edit" class="px-6 py-1.5 rounded-lg text-[10px] font-bold uppercase transition-all bg-white/10 text-white">Build</button>
+                <button onclick="setMode('preview')" id="pc-btn-preview" class="px-6 py-1.5 rounded-lg text-[10px] font-bold uppercase transition-all text-white">Live</button>
             </div>
         </div>
     </nav>
@@ -204,19 +214,19 @@
         <i class="fas fa-ellipsis-v"></i>
     </button>
 
-    <!-- DRAWER -->
+    <!-- DRAWER (SETTINGS) -->
     <div class="drawer" id="side-drawer">
         <h3 class="text-[10px] font-bold uppercase tracking-[0.4em] opacity-30 text-white mb-10">Config</h3>
         <div class="space-y-10">
             <div>
-                <label class="text-[9px] font-bold uppercase mb-4 block accent-text tracking-widest">Mode</label>
+                <label class="text-[9px] font-bold uppercase mb-4 block accent-text tracking-widest">Protocol Mode</label>
                 <div class="flex bg-white/5 p-1 rounded-xl border border-white/5">
-                    <button onclick="setMode('edit')" id="m-btn-edit" class="flex-1 py-2 rounded-lg text-[10px] font-bold uppercase transition-all bg-white/10">Build</button>
-                    <button onclick="setMode('preview')" id="m-btn-preview" class="flex-1 py-2 rounded-lg text-[10px] font-bold uppercase transition-all">Live</button>
+                    <button onclick="setMode('edit')" id="m-btn-edit" class="flex-1 py-2 rounded-lg text-[10px] font-bold uppercase transition-all bg-white/10 text-white">Build</button>
+                    <button onclick="setMode('preview')" id="m-btn-preview" class="flex-1 py-2 rounded-lg text-[10px] font-bold uppercase transition-all text-white">Live</button>
                 </div>
             </div>
             <div>
-                <label class="text-[9px] font-bold uppercase mb-4 block opacity-40 tracking-widest text-white">Visuals</label>
+                <label class="text-[9px] font-bold uppercase mb-4 block opacity-40 tracking-widest text-white">Visual Environments</label>
                 <div class="grid grid-cols-4 gap-2">
                     <button onclick="setTheme('space')" class="h-10 rounded-xl bg-indigo-900/30 border border-white/10 flex items-center justify-center text-white"><i class="fas fa-user-astronaut"></i></button>
                     <button onclick="setTheme('pro')" class="h-10 rounded-xl bg-white border border-zinc-200 flex items-center justify-center text-black"><i class="fas fa-briefcase"></i></button>
@@ -225,7 +235,13 @@
                 </div>
             </div>
             <div>
-                <label class="text-[9px] font-bold uppercase mb-4 block opacity-40 tracking-widest text-white">Accents</label>
+                <label class="text-[9px] font-bold uppercase mb-4 block opacity-40 tracking-widest text-white">Lighting Toggle</label>
+                <button onclick="toggleLuminance()" class="w-full py-4 bg-white/5 rounded-xl border border-white/10 text-white text-[10px] font-bold uppercase tracking-widest">
+                    <i class="fas fa-circle-half-stroke mr-2"></i> Dark / Bright
+                </button>
+            </div>
+            <div>
+                <label class="text-[9px] font-bold uppercase mb-4 block opacity-40 tracking-widest text-white">Core Accents</label>
                 <div class="flex flex-wrap gap-4">
                     <button onclick="setAccent('green')" class="w-8 h-8 rounded-full bg-[#00ff41] border-2 border-white/20"></button>
                     <button onclick="setAccent('blue')" class="w-8 h-8 rounded-full bg-[#00d2ff] border-2 border-white/20"></button>
@@ -236,18 +252,18 @@
         </div>
     </div>
 
-    <!-- ACTION MENU -->
+    <!-- ACTION MENU (MOBILE) -->
     <div class="action-popup" id="action-popup">
-        <button onclick="syncLocal()" class="rect-btn mb-1"><i class="fas fa-sync-alt mr-2"></i> Sync</button>
-        <button onclick="exportDossier()" class="rect-btn mb-1"><i class="fas fa-file-pdf mr-2"></i> PDF</button>
-        <button onclick="showQR()" class="rect-btn"><i class="fas fa-qrcode mr-2"></i> Share</button>
+        <button onclick="syncLocal()" class="rect-btn mb-1 flex items-center gap-3"><i class="fas fa-sync-alt accent-text"></i> Synchronize</button>
+        <button onclick="exportDossier()" class="rect-btn mb-1 flex items-center gap-3"><i class="fas fa-file-pdf text-blue-400"></i> Generate Dossier</button>
+        <button onclick="showQR()" class="rect-btn flex items-center gap-3"><i class="fas fa-qrcode text-purple-400"></i> Broadcast Hub</button>
     </div>
 
     <!-- NAV ARROWS -->
     <button class="nav-arrow left" onclick="prevPage()"><i class="fas fa-chevron-left"></i></button>
     <button class="nav-arrow right" onclick="nextPage()"><i class="fas fa-chevron-right"></i></button>
 
-    <!-- PASSPORT -->
+    <!-- MAIN PASSPORT -->
     <main class="passport-frame" id="main-frame">
         <!-- PAGE 1: IDENTITY -->
         <section id="page-profile" class="page-container active">
@@ -271,11 +287,11 @@
                     <h1 class="text-5xl lg:text-7xl font-bold tracking-tighter mb-4" contenteditable="true" id="user-name">[NAME]</h1>
                     <p class="text-xl lg:text-3xl opacity-40 font-light mb-10" contenteditable="true" id="user-role">[ROLE]</p>
                     <div class="p-8 bg-white/[0.02] border border-white/5 rounded-[32px] mb-10">
-                        <p class="text-base leading-relaxed italic opacity-60 font-light" contenteditable="true" id="user-about">[Professional narrative...]</p>
+                        <p class="text-base leading-relaxed italic opacity-60 font-light" contenteditable="true" id="user-about">[Narrate your professional story...]</p>
                     </div>
                     <div class="grid grid-cols-2 gap-10">
-                        <div><label class="text-[9px] uppercase font-bold opacity-20 block mb-2">Zone</label><span class="text-sm font-bold text-white" contenteditable="true" id="user-loc">[CITY]</span></div>
-                        <div><label class="text-[9px] uppercase font-bold opacity-20 block mb-2">Protocol</label><span class="text-sm font-bold text-white" contenteditable="true" id="user-lang">[LANGS]</span></div>
+                        <div><label class="text-[9px] uppercase font-bold opacity-20 block mb-2">Zone</label><span class="text-sm font-bold" contenteditable="true" id="user-loc">[CITY]</span></div>
+                        <div><label class="text-[9px] uppercase font-bold opacity-20 block mb-2">Protocol</label><span class="text-sm font-bold" contenteditable="true" id="user-lang">[LANGS]</span></div>
                     </div>
                 </div>
             </div>
@@ -285,7 +301,7 @@
         <section id="page-ecosystem" class="page-container">
             <div class="p-10 lg:p-20 h-full flex flex-col">
                 <div class="flex justify-between items-center mb-16">
-                    <h2 class="text-4xl lg:text-6xl font-bold tracking-tighter uppercase text-white">Skill Set</h2>
+                    <h2 class="text-4xl lg:text-6xl font-bold tracking-tighter uppercase">Skill Set</h2>
                     <button onclick="addSkill()" class="edit-ui px-8 py-3 border accent-border accent-text rounded-full text-[10px] font-bold uppercase tracking-widest">+ Node</button>
                 </div>
                 <div id="skill-nodes" class="flex-1 flex flex-wrap gap-6 items-center justify-center content-center overflow-y-auto"></div>
@@ -296,7 +312,7 @@
         <section id="page-path" class="page-container">
             <div class="p-10 lg:p-20 h-full flex flex-col">
                 <div class="flex justify-between items-center mb-16">
-                    <h2 class="text-4xl lg:text-6xl font-bold tracking-tighter uppercase text-white">Experiences</h2>
+                    <h2 class="text-4xl lg:text-6xl font-bold tracking-tighter uppercase">Experiences</h2>
                     <button onclick="addExperience()" class="edit-ui accent-text text-[10px] font-bold uppercase tracking-widest">+ Log</button>
                 </div>
                 <div id="path-timeline" class="space-y-12 flex-1"></div>
@@ -307,7 +323,7 @@
         <section id="page-proof" class="page-container">
             <div class="p-10 lg:p-20 h-full flex flex-col">
                 <div class="flex justify-between items-center mb-16">
-                    <h2 class="text-4xl lg:text-6xl font-bold tracking-tighter uppercase text-white">Projects</h2>
+                    <h2 class="text-4xl lg:text-6xl font-bold tracking-tighter uppercase">Projects</h2>
                     <button onclick="addAsset()" class="edit-ui px-8 py-3 bg-white/5 border border-white/10 rounded-full text-[10px] font-bold uppercase tracking-widest">+ Asset</button>
                 </div>
                 <div id="asset-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"></div>
@@ -317,46 +333,58 @@
         <!-- PAGE 5: OUTRO -->
         <section id="page-outro" class="page-container">
             <div class="h-full flex flex-col p-10 lg:p-20">
-                <div class="mb-14"><p class="text-[10px] font-bold opacity-30 uppercase tracking-[0.5em] mb-10 text-white">Milestones</p>
+                <div class="mb-14">
+                    <p class="text-[10px] font-bold opacity-30 uppercase tracking-[0.5em] mb-10">Milestones</p>
                     <div class="flex flex-wrap items-center justify-between gap-6">
                         <div id="milestone-container" class="flex flex-wrap gap-12 items-center"></div>
                         <button onclick="addMilestone()" class="edit-ui text-[10px] font-bold accent-text uppercase">+ Add</button>
                     </div>
                 </div>
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 flex-1">
-                    <div><p class="text-[10px] font-bold opacity-30 uppercase tracking-[0.5em] mb-10 text-white">Portfolio</p><div id="portfolio-list" class="grid grid-cols-1 sm:grid-cols-2 gap-6"></div><button onclick="addPortfolio()" class="edit-ui mt-8 text-[10px] font-bold text-blue-400 uppercase">+ Item</button></div>
-                    <div><p class="text-[10px] font-bold opacity-30 uppercase tracking-[0.5em] mb-10 text-white">Communication</p><div id="links-container" class="grid grid-cols-1 gap-4"></div><button onclick="addSocial()" class="edit-ui mt-6 text-[10px] font-bold text-purple-400 uppercase">+ Node</button>
+                    <div>
+                        <p class="text-[10px] font-bold opacity-30 uppercase tracking-[0.5em] mb-10">Portfolio</p>
+                        <div id="portfolio-list" class="grid grid-cols-1 sm:grid-cols-2 gap-6"></div>
+                        <button onclick="addPortfolio()" class="edit-ui mt-8 text-[10px] font-bold text-blue-400 uppercase tracking-widest">+ Item</button>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-bold opacity-30 uppercase tracking-[0.5em] mb-10">Communication</p>
+                        <div id="links-container" class="grid grid-cols-1 gap-4"></div>
+                        <button onclick="addSocial()" class="edit-ui mt-6 text-[10px] font-bold text-purple-400 uppercase tracking-widest">+ Node</button>
                         <div class="mt-16 p-10 border-2 border-dashed border-white/5 rounded-[40px] text-center">
-                            <button onclick="closeIdentity()" class="w-full py-5 bg-white text-black font-bold uppercase text-[11px] tracking-widest">Close Passport</button>
+                            <button onclick="closeIdentity()" class="w-full py-5 bg-white text-black font-bold uppercase text-[11px] tracking-widest hover:scale-105 transition-all">Close Passport</button>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
+        <!-- BACK COVER -->
         <div class="back-cover" id="back-cover" onclick="reopenIdentity()">
-            <i class="fas fa-fingerprint text-9xl accent-text mb-10 animate-pulse"></i>
-            <div class="brand text-5xl lg:text-8xl font-bold tracking-[0.5em] mb-4 text-white">SKILLPORT</div>
-            <p class="text-3xl font-bold uppercase tracking-[0.4em] opacity-40 text-white">Thanks.</p>
+            <div class="flex flex-col items-center p-10 text-center">
+                <i class="fas fa-fingerprint text-8xl lg:text-9xl accent-text mb-10 animate-pulse"></i>
+                <div class="brand text-5xl lg:text-8xl font-bold tracking-[0.5em] mb-4 text-white">SKILLPORT</div>
+                <p class="text-3xl font-bold uppercase tracking-[0.4em] opacity-40 text-white">Thanks.</p>
+                <p class="text-[10px] mt-24 opacity-20 uppercase tracking-[0.6em] text-white">Click cover to reopen system</p>
+            </div>
         </div>
     </main>
 
     <!-- PC FOOTER -->
     <footer class="desktop-only fixed bottom-0 w-full z-[3000] px-12 py-6 flex justify-center bg-black/40 backdrop-blur-xl border-t border-white/5">
         <div class="flex items-center gap-12">
-            <button onclick="syncLocal()" class="text-[11px] font-bold uppercase tracking-[0.4em] text-white/50 hover:accent-text transition-all flex items-center gap-3"><i class="fas fa-sync-alt"></i> Sync</button>
-            <button onclick="exportDossier()" class="text-[11px] font-bold uppercase tracking-[0.4em] text-white/50 hover:text-blue-400 transition-all flex items-center gap-3"><i class="fas fa-file-pdf"></i> PDF</button>
-            <button onclick="showQR()" class="text-[11px] font-bold uppercase tracking-[0.4em] text-white/50 hover:text-purple-400 transition-all flex items-center gap-3"><i class="fas fa-qrcode"></i> Share</button>
+            <button onclick="syncLocal()" class="text-[11px] font-bold uppercase tracking-[0.4em] text-white/50 hover:accent-text transition-all flex items-center gap-3"><i class="fas fa-sync-alt"></i> Synchronize</button>
+            <button onclick="exportDossier()" class="text-[11px] font-bold uppercase tracking-[0.4em] text-white/50 hover:text-blue-400 transition-all flex items-center gap-3"><i class="fas fa-file-pdf"></i> Generate Dossier</button>
+            <button onclick="showQR()" class="text-[11px] font-bold uppercase tracking-[0.4em] text-white/50 hover:text-purple-400 transition-all flex items-center gap-3"><i class="fas fa-qrcode"></i> Broadcast Hub</button>
         </div>
     </footer>
 
     <!-- MODAL -->
     <div id="modal-overlay" class="fixed inset-0 z-[9999] bg-black/98 backdrop-blur-3xl hidden items-center justify-center p-6 opacity-0 transition-all duration-300">
         <div class="bg-[#0c0c0c] border border-white/10 p-10 lg:p-14 rounded-[40px] max-w-xl w-full shadow-2xl overflow-y-auto max-h-[90dvh]" onclick="event.stopPropagation()">
-            <h3 id="modal-title" class="text-2xl font-bold uppercase tracking-widest accent-text mb-12">Commit Node</h3>
+            <h3 id="modal-title" class="text-2xl font-bold uppercase tracking-widest accent-text mb-12">Update Node</h3>
             <div id="modal-fields" class="space-y-6 text-white"></div>
             <div class="flex gap-4 mt-14 pt-10 border-t border-white/5">
-                <button onclick="saveModalData()" class="flex-1 accent-bg text-black py-4 rounded-2xl font-bold uppercase text-[11px] tracking-widest hover:scale-105 transition-all">Apply Sync</button>
+                <button onclick="saveModalData()" class="flex-1 accent-bg text-black py-4 rounded-2xl font-bold uppercase text-[11px] tracking-widest hover:scale-105 transition-all">Synchronize Sync</button>
                 <button onclick="deleteItem()" class="px-8 py-4 bg-red-500/10 text-red-500 rounded-2xl hover:bg-red-500 transition-all"><i class="fas fa-trash"></i></button>
             </div>
         </div>
@@ -366,10 +394,10 @@
         const pages = ['profile', 'ecosystem', 'path', 'proof', 'outro'];
         let currentPageIndex = 0;
         let state = {
-            mode: 'edit', theme: 'space', accent: 'green',
+            mode: 'edit', theme: 'space', accent: 'green', lightMode: false,
             skills: [], experience: [], assets: [], milestones: [], portfolio: [], socials: [],
             user: {
-                name: '[YOUR NAME]', role: '[YOUR ROLE]', status: 'ACTIVE', about: '[Professional narrative...]',
+                name: '[YOUR NAME]', role: '[YOUR ROLE]', status: 'ACTIVE', about: '[Professional story...]',
                 loc: '[CITY]', lang: '[LANGS]', avatar: 'https://images.unsplash.com/photo-1633332755192-727a05c4013d?auto=format&fit=crop&q=80&w=400'
             }
         };
@@ -394,7 +422,6 @@
             document.querySelectorAll('.page-container').forEach(p => p.classList.remove('active'));
             const target = document.getElementById(`page-${id}`);
             if(target) target.classList.add('active');
-            window.scrollTo(0,0);
         }
 
         function nextPage() { currentPageIndex = (currentPageIndex + 1) % pages.length; showPage(pages[currentPageIndex]); }
@@ -402,7 +429,11 @@
 
         function setTheme(t) { state.theme = t; applyFullTheme(); saveState(); }
         function setAccent(a) { state.accent = a; applyFullTheme(); saveState(); }
-        function applyFullTheme() { document.body.className = `theme-${state.theme} acc-${state.accent} ${state.mode === 'preview' ? 'preview-mode' : ''}`; }
+        function toggleLuminance() { state.lightMode = !state.lightMode; applyFullTheme(); saveState(); }
+
+        function applyFullTheme() { 
+            document.body.className = `theme-${state.theme} acc-${state.accent} ${state.mode === 'preview' ? 'preview-mode' : ''} ${state.lightMode ? 'light-mode' : ''}`; 
+        }
 
         function setMode(m) {
             state.mode = m;
@@ -429,21 +460,21 @@
         }
 
         function renderSkills() {
-            document.getElementById('skill-nodes').innerHTML = state.skills.map((s, i) => `<div onclick="openModal('skills', ${i})" class="bg-white/5 border border-white/10 rounded-3xl p-8 min-w-[160px] text-center cursor-pointer hover:border-accent transition-all group shadow-xl"><i class="fas ${s.icon} text-3xl accent-text opacity-40 group-hover:opacity-100 mb-6 transition-all"></i><p class="text-xs font-bold uppercase tracking-widest text-white">${s.name}</p></div>`).join('') || '<p class="opacity-10 text-[11px] uppercase tracking-[0.5em]">Offline</p>';
+            document.getElementById('skill-nodes').innerHTML = state.skills.map((s, i) => `<div onclick="openModal('skills', ${i})" class="bg-white/5 border border-white/10 rounded-3xl p-8 min-w-[160px] text-center cursor-pointer hover:border-accent transition-all group shadow-xl"><i class="fas ${s.icon} text-3xl accent-text opacity-40 group-hover:opacity-100 mb-6 transition-all"></i><p class="text-xs font-bold uppercase tracking-widest">${s.name}</p></div>`).join('') || '<p class="opacity-10 text-[11px] uppercase tracking-[0.5em]">Offline</p>';
         }
 
         function renderExperience() {
-            document.getElementById('path-timeline').innerHTML = state.experience.map((e, i) => `<div onclick="openModal('experience', ${i})" class="group flex gap-8 cursor-pointer hover:translate-x-3 transition-all"><div class="w-24 shrink-0 text-[11px] font-bold accent-text pt-1 mono uppercase tracking-tighter">${e.time || '20XX'}</div><div class="pb-12 border-l-2 border-white/10 pl-8 relative text-white"><div class="absolute -left-[11px] top-1.5 w-5 h-5 rounded-full bg-white group-hover:bg-accent group-hover:scale-125 transition-all"></div><h4 class="text-2xl lg:text-3xl font-bold tracking-tight mb-3 uppercase">${e.role || 'ROLE'}</h4><p class="text-sm opacity-40 mb-6 font-medium">${e.company || 'COMPANY'}</p><p class="text-[11px] opacity-60 italic leading-relaxed">${e.desc || '...'}</p></div></div>`).join('') || '<p class="opacity-10 py-10 uppercase tracking-[0.5em]">Empty Log</p>';
+            document.getElementById('path-timeline').innerHTML = state.experience.map((e, i) => `<div onclick="openModal('experience', ${i})" class="group flex gap-8 cursor-pointer hover:translate-x-3 transition-all"><div class="w-24 shrink-0 text-[11px] font-bold accent-text pt-1 mono uppercase tracking-tighter">${e.time || '20XX'}</div><div class="pb-12 border-l-2 border-white/10 pl-8 relative"><div class="absolute -left-[11px] top-1.5 w-5 h-5 rounded-full bg-white group-hover:bg-accent group-hover:scale-125 transition-all"></div><h4 class="text-2xl lg:text-3xl font-bold tracking-tight mb-3 uppercase">${e.role || 'ROLE'}</h4><p class="text-sm opacity-40 mb-6 font-medium">${e.company || 'COMPANY'}</p><p class="text-[11px] opacity-60 italic leading-relaxed">${e.desc || '...'}</p></div></div>`).join('') || '<p class="opacity-10 py-10 uppercase tracking-[0.5em]">Empty Log</p>';
         }
 
         function renderAssets() {
-            document.getElementById('asset-grid').innerHTML = state.assets.map((a, i) => `<div onclick="openModal('assets', ${i})" class="bg-white/5 border border-white/10 p-8 rounded-[40px] hover:border-accent transition-all cursor-pointer shadow-2xl text-white"><i class="fas fa-file-code text-3xl opacity-20 accent-text mb-10"></i><h4 class="text-xl font-bold mb-3 uppercase tracking-tight">${a.name || 'ASSET'}</h4><p class="text-[13px] opacity-40 mb-8 leading-relaxed font-light">${a.desc || '...'}</p><div class="flex items-center gap-3 text-[11px] font-bold accent-text uppercase tracking-widest"><i class="fas fa-check-circle"></i> VERIFIED_NODE</div></div>`).join('') || '<p class="opacity-10 py-10 col-span-full text-center tracking-[0.5em]">Assets Empty</p>';
+            document.getElementById('asset-grid').innerHTML = state.assets.map((a, i) => `<div onclick="openModal('assets', ${i})" class="bg-white/5 border border-white/10 p-8 rounded-[40px] hover:border-accent transition-all cursor-pointer shadow-2xl"><i class="fas fa-file-code text-3xl opacity-20 accent-text mb-10"></i><h4 class="text-xl font-bold mb-3 uppercase tracking-tight">${a.name || 'ASSET'}</h4><p class="text-[13px] opacity-40 mb-8 leading-relaxed font-light">${a.desc || '...'}</p><div class="flex items-center gap-3 text-[11px] font-bold accent-text uppercase tracking-widest"><i class="fas fa-check-circle"></i> VERIFIED_NODE</div></div>`).join('') || '<p class="opacity-10 py-10 col-span-full text-center tracking-[0.5em]">Assets Empty</p>';
         }
 
         function renderOutro() {
             document.getElementById('milestone-container').innerHTML = state.milestones.map((m, i) => `<div onclick="openModal('milestones', ${i})" class="flex items-center gap-3 text-xs font-bold uppercase tracking-widest text-yellow-500 cursor-pointer hover:scale-110 transition-all"><i class="fas fa-award"></i> ${m.text}</div>`).join('') || '<span class="opacity-10 text-[11px]">N/A</span>';
-            document.getElementById('portfolio-list').innerHTML = state.portfolio.map((p, i) => `<div onclick="openModal('portfolio', ${i})" class="bg-white/5 border border-white/10 rounded-2xl aspect-square flex flex-col justify-center items-center text-center p-4 hover:border-accent transition-all cursor-pointer text-white"><div><i class="fas fa-layer-group text-lg opacity-30 group-hover:text-blue-400"></i></div><h4 class="text-[10px] font-bold uppercase mt-4 tracking-widest">${p.title}</h4></div>`).join('');
-            document.getElementById('links-container').innerHTML = state.socials.map((s, i) => `<div onclick="openModal('socials', ${i})" class="p-5 bg-white/5 rounded-2xl border border-white/5 cursor-pointer hover:border-purple-400 transition-all flex items-center gap-6 text-white"><i class="${s.icon} text-lg opacity-30 group-hover:text-purple-400"></i><span class="text-sm font-bold uppercase tracking-widest">${s.label}</span></div>`).join('');
+            document.getElementById('portfolio-list').innerHTML = state.portfolio.map((p, i) => `<div onclick="openModal('portfolio', ${i})" class="bg-white/5 border border-white/10 rounded-2xl aspect-square flex flex-col justify-center items-center text-center p-4 hover:border-accent transition-all cursor-pointer"><div><i class="fas fa-layer-group text-lg opacity-30 group-hover:text-blue-400"></i></div><h4 class="text-[10px] font-bold uppercase mt-4 tracking-widest">${p.title}</h4></div>`).join('');
+            document.getElementById('links-container').innerHTML = state.socials.map((s, i) => `<div onclick="openModal('socials', ${i})" class="p-5 bg-white/5 rounded-2xl border border-white/5 cursor-pointer hover:border-purple-400 transition-all flex items-center gap-6"><i class="${s.icon} text-lg opacity-30 group-hover:text-purple-400"></i><span class="text-sm font-bold uppercase tracking-widest">${s.label}</span></div>`).join('');
         }
 
         const SCHEMAS = { skills: ['name', 'icon'], experience: ['company', 'role', 'time', 'desc'], assets: ['name', 'desc', 'url'], milestones: ['text'], portfolio: ['title', 'url'], socials: ['label', 'icon', 'url'] };
@@ -472,11 +503,35 @@
         function showToast(msg) { const t = document.getElementById('toast'); t.innerText = msg; t.classList.add('visible'); setTimeout(() => t.classList.remove('visible'), 2500); }
         function saveState() { 
             state.user.name = document.getElementById('user-name').innerText; state.user.role = document.getElementById('user-role').innerText; state.user.about = document.getElementById('user-about').innerText; state.user.status = document.getElementById('user-status').innerText; state.user.loc = document.getElementById('user-loc').innerText; state.user.lang = document.getElementById('user-lang').innerText; 
-            localStorage.setItem('skillport_v23', JSON.stringify(state)); 
+            localStorage.setItem('skillport_v26_pro', JSON.stringify(state)); 
         }
-        function loadState() { const raw = localStorage.getItem('skillport_v23'); if(raw) { Object.assign(state, JSON.parse(raw)); applyFullTheme(); setMode(state.mode); } }
+        function loadState() { const raw = localStorage.getItem('skillport_v26_pro'); if(raw) { Object.assign(state, JSON.parse(raw)); applyFullTheme(); setMode(state.mode); } }
         function syncLocal() { saveState(); showToast('Synchronized'); if(document.getElementById('action-popup')) document.getElementById('action-popup').classList.remove('active'); }
-        async function exportDossier() { showToast('Compiling PDF...'); const main = document.querySelector('.passport-frame'); const canvas = await html2canvas(main, { backgroundColor: getComputedStyle(document.body).backgroundColor, scale: 2 }); const pdf = new jspdf.jsPDF('l', 'mm', 'a4'); pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, 297, 210); pdf.save(`SkillPort_Dossier.pdf`); if(document.getElementById('action-popup')) document.getElementById('action-popup').classList.remove('active'); }
+        
+        async function exportDossier() { 
+            showToast('Compiling Multi-Page Dossier...'); 
+            document.body.classList.add('pdf-export-mode');
+            const pdf = new jspdf.jsPDF('l', 'mm', 'a4');
+            const pageIds = ['page-profile', 'page-ecosystem', 'page-path', 'page-proof', 'page-outro'];
+            
+            for (let i = 0; i < pageIds.length; i++) {
+                showPage(pageIds[i].split('-')[1]);
+                await new Promise(r => setTimeout(r, 600)); // Longer wait for rendering
+                const canvas = await html2canvas(document.getElementById(pageIds[i]), { 
+                    backgroundColor: getComputedStyle(document.body).backgroundColor,
+                    scale: 2,
+                    useCORS: true
+                });
+                if (i > 0) pdf.addPage('l', 'mm', 'a4');
+                pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, 297, 210);
+            }
+            
+            pdf.save(`SkillPort_Dossier_${state.user.name.replace(/\s/g, '_')}.pdf`);
+            document.body.classList.remove('pdf-export-mode');
+            showPage('profile');
+            showToast('Dossier Exported');
+        }
+
         function showQR() { const div = document.createElement('div'); div.className = 'fixed inset-0 z-[10000] bg-black/95 flex items-center justify-center p-8 cursor-pointer'; div.onclick = () => div.remove(); const canvas = document.createElement('canvas'); div.appendChild(canvas); document.body.appendChild(div); QRCode.toCanvas(canvas, window.location.href, { width: 280, margin: 1 }); if(document.getElementById('action-popup')) document.getElementById('action-popup').classList.remove('active'); }
         function closeIdentity() { document.getElementById('main-frame').classList.add('closed'); if(document.getElementById('action-popup')) document.getElementById('action-popup').classList.remove('active'); }
         function reopenIdentity() { document.getElementById('main-frame').classList.remove('closed'); }
