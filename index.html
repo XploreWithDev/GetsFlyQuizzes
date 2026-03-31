@@ -22,64 +22,37 @@
             --glow: rgba(0, 255, 65, 0.4);
         }
 
+        /* THEME & ACCENT SYSTEM */
         body.acc-green { --accent: #00ff41; --glow: rgba(0, 255, 65, 0.5); }
         body.acc-blue { --accent: #00d2ff; --glow: rgba(0, 210, 255, 0.5); }
         body.acc-gold { --accent: #d4af37; --glow: rgba(212, 175, 55, 0.5); }
         body.acc-purple { --accent: #a855f7; --glow: rgba(168, 85, 247, 0.5); }
         body.acc-rose { --accent: #fb7185; --glow: rgba(251, 113, 133, 0.5); }
-        body.acc-cyan { --accent: #22d3ee; --glow: rgba(34, 211, 238, 0.5); }
 
-        * {
-            -webkit-tap-highlight-color: transparent;
-            outline: none;
-        }
+        body.theme-space { background: radial-gradient(circle at 50% 50%, #1a1a2e 0%, #020205 100%); --page-bg: #0c0c14; }
+        body.theme-pro { background: #f4f4f5; --text: #09090b; --page-bg: #ffffff; --border: #e4e4e7; }
+        body.theme-cyber { background: #000; --page-bg: #050505; --border: var(--accent); }
+        body.theme-doodle { font-family: 'Kalam', cursive; background: #fffceb; --text: #1a1a1a; --page-bg: #ffffff; --border: #1a1a1a; }
+
+        * { -webkit-tap-highlight-color: transparent !important; outline: none !important; }
 
         body {
             background-color: var(--bg);
             color: var(--text);
             font-family: 'Space Grotesk', sans-serif;
-            overflow-x: hidden;
-            min-height: 100dvh;
-            transition: background 0.5s ease;
-            display: flex;
-            flex-direction: column;
+            overflow: hidden;
+            height: 100dvh;
+            width: 100vw;
+            transition: all 0.5s ease;
         }
 
-        /* --- THEME ENVIRONMENTS --- */
-        body.theme-space { background: radial-gradient(circle at 50% 50%, #1a1a2e 0%, #020205 100%); }
-        body.theme-space::before {
-            content: ''; position: fixed; inset: 0; 
-            background-image: url('https://www.transparenttextures.com/patterns/stardust.png');
-            opacity: 0.3; pointer-events: none; z-index: -1;
-        }
-
-        body.theme-doodle { font-family: 'Kalam', cursive; background: #fffceb; color: #1a1a1a; --text: #1a1a1a; --page-bg: #ffffff; --border: #1a1a1a; }
-        body.theme-doodle .page-container { border: 3px solid #1a1a1a !important; border-radius: 4px !important; box-shadow: 8px 8px 0px #1a1a1a !important; }
-        
-        body.theme-pro { background: #f4f4f5; color: #09090b; --text: #09090b; --page-bg: #ffffff; --border: #e4e4e7; }
-        body.theme-pro::before {
-            content: ''; position: fixed; inset: 0;
-            background-image: radial-gradient(#d1d1d6 1px, transparent 1px);
-            background-size: 24px 24px; z-index: -1;
-        }
-
-        body.theme-cyber { background: #000; }
-        body.theme-cyber::before {
-            content: ''; position: fixed; inset: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
-            background-size: 100% 4px, 4px 100%; pointer-events: none; z-index: 1000;
-        }
-
-        /* --- PASSPORT ARCHITECTURE --- */
         .passport-frame {
             perspective: 2500px;
-            width: 92%;
-            max-width: 1100px;
-            margin: 120px auto 40px auto;
+            width: 100%;
+            height: 100dvh;
             position: relative;
-            flex-grow: 1;
-            transition: transform 1s cubic-bezier(0.645, 0.045, 0.355, 1);
             transform-style: preserve-3d;
+            transition: transform 1s cubic-bezier(0.645, 0.045, 0.355, 1);
         }
 
         .passport-frame.closed { transform: rotateY(-180deg); }
@@ -87,260 +60,255 @@
         .page-container {
             width: 100%;
             height: 100%;
-            min-height: 75dvh;
             background: var(--page-bg);
-            border: 2px solid var(--border);
-            border-radius: 32px;
-            box-shadow: 0 40px 100px -20px rgba(0,0,0,0.8);
             position: absolute;
-            top: 0;
-            left: 0;
+            top: 0; left: 0;
             display: none;
             overflow-y: auto;
             backface-visibility: hidden;
-            scrollbar-width: none;
+            border-left: 1px solid var(--border);
+            border-right: 1px solid var(--border);
         }
-        .page-container::-webkit-scrollbar { display: none; }
 
-        .page-container.active {
-            display: block;
-            animation: pageTurn 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-            z-index: 10;
-        }
+        .page-container.active { display: block; z-index: 10; animation: pageTurn 0.6s forwards; }
 
         @keyframes pageTurn {
-            0% { transform: rotateY(15deg) translateX(40px); opacity: 0; }
+            0% { transform: rotateY(15deg) translateX(30px); opacity: 0; }
             100% { transform: rotateY(0deg) translateX(0); opacity: 1; }
         }
 
-        /* NAVIGATION ARROWS */
         .nav-arrow {
-            position: fixed;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 55px;
-            height: 55px;
-            background: rgba(0,0,0,0.85);
-            border: 2px solid var(--accent);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 999; /* Highest priority */
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            color: var(--accent);
-            backdrop-filter: blur(10px);
-            touch-action: manipulation;
+            position: fixed; top: 50%; transform: translateY(-50%);
+            width: 50px; height: 50px; background: rgba(0,0,0,0.8);
+            border: 1px solid var(--accent); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            z-index: 999; color: var(--accent); backdrop-filter: blur(10px);
+            box-shadow: 0 0 15px var(--glow); transition: 0.3s;
         }
+        .nav-arrow:hover { transform: translateY(-50%) scale(1.1); box-shadow: 0 0 25px var(--accent); }
+        .nav-arrow.left { left: 20px; }
+        .nav-arrow.right { right: 20px; }
 
-        .nav-arrow::before {
-            content: ''; position: absolute; inset: -3px;
-            border: 1.5px solid var(--accent); border-radius: 50%;
-            animation: navPulse 2s infinite; opacity: 0;
+        /* EXIT PREVIEW BUTTON */
+        #exit-preview {
+            display: none; position: fixed; top: 20px; left: 20px; z-index: 6000;
+            background: var(--accent); color: #000; padding: 10px 20px; border-radius: 12px;
+            font-weight: 800; text-transform: uppercase; font-size: 10px; letter-spacing: 1px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
         }
+        body.preview-mode #exit-preview { display: block; }
 
-        @keyframes navPulse {
-            0% { transform: scale(1); opacity: 0.8; }
-            100% { transform: scale(1.5); opacity: 0; }
+        /* ACTION MENU & DRAWER */
+        .drawer {
+            position: fixed; top: 0; right: -320px; width: 300px; height: 100%;
+            background: rgba(10, 10, 10, 0.98); backdrop-filter: blur(30px);
+            border-left: 1px solid var(--border); z-index: 5000;
+            transition: right 0.4s ease; padding: 50px 24px;
         }
+        .drawer.active { right: 0; }
 
-        /* MOBILE OPTIMIZATIONS: FULL SIZE PAGE */
-        @media (max-width: 1024px) {
-            .passport-frame { 
-                width: 100%; /* Spans full width */
-                margin-top: 130px; 
-                margin-bottom: 140px; 
-                transform: scale(1); /* Reset scale to make it feel large */
-            }
-            .page-container {
-                border-radius: 0; /* Remove rounded corners for full bleed feel */
-                border-left: none;
-                border-right: none;
-            }
-            /* Smaller arrows on mobile and repositioned to avoid footer interference */
-            .nav-arrow { top: auto; bottom: 100px; transform: none; width: 44px; height: 44px; }
-            .nav-arrow.left { left: 20px; }
-            .nav-arrow.right { right: 20px; }
+        .action-popup {
+            position: fixed; bottom: 80px; right: 16px;
+            background: rgba(15, 15, 15, 0.95); backdrop-filter: blur(20px);
+            border: 1px solid var(--border); border-radius: 16px;
+            padding: 8px; z-index: 4000; display: none; flex-direction: column;
         }
-        
-        @media (min-width: 1025px) {
-            .nav-arrow.left { left: 40px; }
-            .nav-arrow.right { right: 40px; }
-        }
+        .action-popup.active { display: flex; }
 
-        .edit-ui { display: block; }
-        body.preview-mode .edit-ui { display: none !important; }
+        /* RECTANGLE BUTTONS */
+        .rect-btn {
+            padding: 12px 20px; border-radius: 12px; border: 1px solid var(--border);
+            background: rgba(255,255,255,0.05); font-size: 10px; font-weight: 700;
+            text-transform: uppercase; transition: 0.2s; color: #fff;
+        }
+        .rect-btn:hover { border-color: var(--accent); background: rgba(255,255,255,0.1); }
 
         .accent-text { color: var(--accent) !important; }
         .accent-bg { background-color: var(--accent) !important; }
-        .accent-border { border-color: var(--accent) !important; }
+        
+        .edit-ui { display: block; }
+        body.preview-mode .edit-ui { display: none !important; }
 
         #loading-overlay {
-            position: fixed; inset: 0; z-index: 5000; background: #000;
+            position: fixed; inset: 0; z-index: 9999; background: #000;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
 
-        [contenteditable="true"]:focus { outline: none; background: rgba(128,128,128,0.1); border-radius: 4px; padding: 0 4px; }
-        
         .back-cover {
-            width: 100%; height: 100%; min-height: 75dvh; background: #080808;
-            border: 3px solid var(--accent); border-radius: 32px;
+            width: 100%; height: 100%; background: #050505;
             position: absolute; top: 0; left: 0; transform: rotateY(180deg);
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            backface-visibility: hidden; z-index: 5;
+            backface-visibility: hidden; z-index: 5; border: 4px solid var(--accent);
         }
-        @media (max-width: 1024px) {
-            .back-cover { border-radius: 0; }
-        }
+
+        [contenteditable="true"]:focus { background: rgba(255,255,255,0.05); padding: 0 4px; border-radius: 4px; }
 
         #toast {
-            position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%) translateY(100px);
-            background: var(--accent); color: #000; padding: 10px 24px; border-radius: 50px;
-            font-weight: 700; font-size: 11px; text-transform: uppercase; z-index: 3000;
-            opacity: 0; transition: 0.4s; pointer-events: none;
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px);
+            background: var(--accent); color: #000; padding: 12px 30px; border-radius: 50px;
+            font-weight: 800; font-size: 10px; text-transform: uppercase; z-index: 7000;
+            transition: 0.4s; pointer-events: none;
         }
-        #toast.visible { transform: translateX(-50%) translateY(0); opacity: 1; }
+        #toast.visible { transform: translateX(-50%) translateY(0); }
 
-        /* Portfolio Item Enhancements */
-        .port-item {
-            aspect-ratio: 1/1;
-            background: rgba(255,255,255,0.03);
-            border: 1px solid var(--border);
-            border-radius: 24px;
-            padding: 24px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            transition: all 0.3s ease;
+        @media (min-width: 1025px) {
+            .mobile-only { display: none !important; }
+            .desktop-only { display: flex !important; }
         }
-        .port-item:hover {
-            border-color: var(--accent);
-            background: rgba(255,255,255,0.06);
-            transform: translateY(-5px);
+        @media (max-width: 1024px) {
+            .desktop-only { display: none !important; }
+            .mobile-only { display: flex !important; }
+            .passport-frame { transform-origin: top center; }
         }
     </style>
 </head>
 <body class="theme-space acc-green">
 
-    <div class="leaf-container" id="leaf-layer"></div>
-
     <div id="loading-overlay">
-        <div class="brand text-3xl font-bold tracking-[0.6em] mb-4 text-white">SKILLPORT</div>
-        <div class="w-32 h-0.5 bg-white/10 relative overflow-hidden">
-            <div class="absolute inset-0 accent-bg w-1/2 animate-[loading_1s_infinite_linear]"></div>
-        </div>
+        <div class="brand text-3xl font-bold tracking-[0.5em] mb-4 text-white">SKILLPORT</div>
+        <div class="w-24 h-0.5 bg-white/10 relative overflow-hidden"><div class="absolute inset-0 accent-bg w-1/2 animate-[loading_1s_infinite_linear]"></div></div>
     </div>
     <style> @keyframes loading { 0% { transform: translateX(-100%); } 100% { transform: translateX(200%); } } </style>
 
-    <div id="toast">Data Synchronized</div>
+    <div id="toast">Changes Saved</div>
 
-    <!-- UI CONTROLS -->
-    <nav class="fixed top-4 left-1/2 -translate-x-1/2 z-[300] flex flex-col items-center gap-3 px-6 py-4 bg-black/80 backdrop-blur-3xl rounded-[32px] border border-white/10 edit-ui w-max max-w-[95vw] shadow-2xl">
-        <div class="flex items-center gap-4">
-            <div class="flex gap-2">
-                <button onclick="setTheme('space')" class="w-8 h-8 rounded-xl bg-indigo-950/50 border border-white/10 flex items-center justify-center hover:scale-110 transition-transform"><i class="fas fa-user-astronaut text-[10px] text-white"></i></button>
-                <button onclick="setTheme('pro')" class="w-8 h-8 rounded-xl bg-white border border-zinc-200 flex items-center justify-center hover:scale-110 transition-transform"><i class="fas fa-briefcase text-[10px] text-zinc-800"></i></button>
-                <button onclick="setTheme('doodle')" class="w-8 h-8 rounded-xl bg-[#fffceb] border border-zinc-400 flex items-center justify-center hover:scale-110 transition-transform"><i class="fas fa-pen-nib text-[10px] text-zinc-800"></i></button>
-                <button onclick="setTheme('cyber')" class="w-8 h-8 rounded-xl bg-black border border-green-500 flex items-center justify-center hover:scale-110 transition-transform"><i class="fas fa-bolt text-[10px] text-green-500"></i></button>
+    <!-- PERSISTENT OVERLAYS -->
+    <button id="exit-preview" onclick="setMode('edit')"><i class="fas fa-edit mr-2"></i> Leave Preview</button>
+
+    <!-- PC HEADER -->
+    <nav class="desktop-only fixed top-0 w-full z-[3000] px-10 py-6 flex justify-between items-center bg-black/40 backdrop-blur-xl border-b border-white/5">
+        <div class="brand text-2xl font-bold tracking-tighter text-white">SKILLPORT<span class="accent-text">.</span></div>
+        <div class="flex items-center gap-6">
+            <div class="flex gap-3">
+                <button onclick="setTheme('space')" class="text-white/40 hover:text-white transition-colors"><i class="fas fa-user-astronaut"></i></button>
+                <button onclick="setTheme('pro')" class="text-white/40 hover:text-white transition-colors"><i class="fas fa-briefcase"></i></button>
+                <button onclick="setTheme('cyber')" class="text-white/40 hover:text-white transition-colors"><i class="fas fa-bolt"></i></button>
+                <div class="w-px h-4 bg-white/10 mx-2"></div>
+                <button onclick="setAccent('green')" class="w-4 h-4 rounded-full bg-[#00ff41] border border-white/20 hover:scale-125 transition-all"></button>
+                <button onclick="setAccent('blue')" class="w-4 h-4 rounded-full bg-[#00d2ff] border border-white/20 hover:scale-125 transition-all"></button>
+                <button onclick="setAccent('gold')" class="w-4 h-4 rounded-full bg-[#d4af37] border border-white/20 hover:scale-125 transition-all"></button>
             </div>
-            <div class="w-px h-6 bg-white/10 mx-1"></div>
-            <div class="flex gap-2.5">
-                <button onclick="setAccent('green')" class="w-5 h-5 rounded-full bg-[#00ff41] border border-white/20"></button>
-                <button onclick="setAccent('blue')" class="w-5 h-5 rounded-full bg-[#00d2ff] border border-white/20"></button>
-                <button onclick="setAccent('gold')" class="w-5 h-5 rounded-full bg-[#d4af37] border border-white/20"></button>
-                <button onclick="setAccent('purple')" class="w-5 h-5 rounded-full bg-[#a855f7] border border-white/20"></button>
-                <button onclick="setAccent('rose')" class="w-5 h-5 rounded-full bg-[#fb7185] border border-white/20"></button>
+            <div class="flex bg-white/5 p-1 rounded-xl border border-white/10">
+                <button onclick="setMode('edit')" id="pc-btn-edit" class="px-6 py-1.5 rounded-lg text-[10px] font-bold uppercase transition-all bg-white/10">Build</button>
+                <button onclick="setMode('preview')" id="pc-btn-preview" class="px-6 py-1.5 rounded-lg text-[10px] font-bold uppercase transition-all">Live</button>
             </div>
-        </div>
-        <div class="flex items-center gap-4 bg-white/5 p-1 rounded-2xl w-full">
-            <button onclick="setMode('edit')" id="btn-edit" class="flex-1 py-1.5 rounded-xl text-[10px] font-bold uppercase transition-all bg-white/10">Build</button>
-            <button onclick="setMode('preview')" id="btn-preview" class="flex-1 py-1.5 rounded-xl text-[10px] font-bold uppercase transition-all">Live</button>
         </div>
     </nav>
 
-    <!-- Navigation Arrows - FLOATING OUTSIDE -->
-    <button class="nav-arrow left" onclick="prevPage()" aria-label="Previous Page"><i class="fas fa-arrow-left"></i></button>
-    <button class="nav-arrow right" onclick="nextPage()" aria-label="Next Page"><i class="fas fa-arrow-right"></i></button>
+    <!-- MOBILE MENU TRIGGERS -->
+    <button onclick="toggleDrawer()" class="mobile-only fixed top-5 right-5 z-[5001] w-12 h-12 bg-black border border-white/10 rounded-full flex items-center justify-center text-white">
+        <i class="fas fa-bars" id="menu-icon"></i>
+    </button>
 
+    <button onclick="toggleActionMenu()" class="mobile-only fixed bottom-5 right-5 z-[4001] w-12 h-12 bg-black border border-white/10 rounded-full flex items-center justify-center text-white">
+        <i class="fas fa-ellipsis-v"></i>
+    </button>
+
+    <!-- DRAWER -->
+    <div class="drawer" id="side-drawer">
+        <h3 class="text-[10px] font-bold uppercase tracking-[0.4em] opacity-30 text-white mb-10">Config</h3>
+        <div class="space-y-10">
+            <div>
+                <label class="text-[9px] font-bold uppercase mb-4 block accent-text tracking-widest">Mode</label>
+                <div class="flex bg-white/5 p-1 rounded-xl border border-white/5">
+                    <button onclick="setMode('edit')" id="m-btn-edit" class="flex-1 py-2 rounded-lg text-[10px] font-bold uppercase transition-all bg-white/10">Build</button>
+                    <button onclick="setMode('preview')" id="m-btn-preview" class="flex-1 py-2 rounded-lg text-[10px] font-bold uppercase transition-all">Live</button>
+                </div>
+            </div>
+            <div>
+                <label class="text-[9px] font-bold uppercase mb-4 block opacity-40 tracking-widest text-white">Visuals</label>
+                <div class="grid grid-cols-4 gap-2">
+                    <button onclick="setTheme('space')" class="h-10 rounded-xl bg-indigo-900/30 border border-white/10 flex items-center justify-center text-white"><i class="fas fa-user-astronaut"></i></button>
+                    <button onclick="setTheme('pro')" class="h-10 rounded-xl bg-white border border-zinc-200 flex items-center justify-center text-black"><i class="fas fa-briefcase"></i></button>
+                    <button onclick="setTheme('doodle')" class="h-10 rounded-xl bg-[#fffceb] border border-zinc-400 flex items-center justify-center text-black"><i class="fas fa-pen-nib"></i></button>
+                    <button onclick="setTheme('cyber')" class="h-10 rounded-xl bg-black border border-green-500 flex items-center justify-center text-green-500"><i class="fas fa-bolt"></i></button>
+                </div>
+            </div>
+            <div>
+                <label class="text-[9px] font-bold uppercase mb-4 block opacity-40 tracking-widest text-white">Accents</label>
+                <div class="flex flex-wrap gap-4">
+                    <button onclick="setAccent('green')" class="w-8 h-8 rounded-full bg-[#00ff41] border-2 border-white/20"></button>
+                    <button onclick="setAccent('blue')" class="w-8 h-8 rounded-full bg-[#00d2ff] border-2 border-white/20"></button>
+                    <button onclick="setAccent('gold')" class="w-8 h-8 rounded-full bg-[#d4af37] border-2 border-white/20"></button>
+                    <button onclick="setAccent('purple')" class="w-8 h-8 rounded-full bg-[#a855f7] border-2 border-white/20"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ACTION MENU -->
+    <div class="action-popup" id="action-popup">
+        <button onclick="syncLocal()" class="rect-btn mb-1"><i class="fas fa-sync-alt mr-2"></i> Sync</button>
+        <button onclick="exportDossier()" class="rect-btn mb-1"><i class="fas fa-file-pdf mr-2"></i> PDF</button>
+        <button onclick="showQR()" class="rect-btn"><i class="fas fa-qrcode mr-2"></i> Share</button>
+    </div>
+
+    <!-- NAV ARROWS -->
+    <button class="nav-arrow left" onclick="prevPage()"><i class="fas fa-chevron-left"></i></button>
+    <button class="nav-arrow right" onclick="nextPage()"><i class="fas fa-chevron-right"></i></button>
+
+    <!-- PASSPORT -->
     <main class="passport-frame" id="main-frame">
-        
         <!-- PAGE 1: IDENTITY -->
         <section id="page-profile" class="page-container active">
             <div class="grid grid-cols-1 lg:grid-cols-2 h-full">
-                <!-- Visual Flap -->
-                <div class="p-10 lg:p-14 flex flex-col items-center justify-center border-b lg:border-b-0 lg:border-r border-white/5 bg-white/[0.01]">
-                    <div class="relative w-64 h-72 lg:w-72 lg:h-80 mb-10 group">
+                <div class="p-10 flex flex-col items-center justify-center border-b lg:border-b-0 lg:border-r border-white/5">
+                    <div class="relative w-64 h-72 lg:w-72 lg:h-80 mb-10">
                         <img id="user-img" src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?auto=format&fit=crop&q=80&w=400" 
-                             class="w-full h-full object-cover rounded-3xl border border-white/10 grayscale group-hover:grayscale-0 transition-all duration-700" alt="Identity">
-                        <div class="absolute -bottom-4 -right-4 w-16 h-16 bg-black border border-white/10 rounded-full flex items-center justify-center edit-ui cursor-pointer shadow-2xl hover:scale-110 transition-all" onclick="document.getElementById('avatar-input').click()">
+                             class="w-full h-full object-cover rounded-3xl border border-white/10 grayscale" alt="Identity">
+                        <div class="absolute -bottom-4 -right-4 w-16 h-16 bg-black border border-white/10 rounded-full flex items-center justify-center edit-ui cursor-pointer shadow-2xl" onclick="document.getElementById('avatar-input').click()">
                             <i class="fas fa-camera text-sm accent-text"></i>
                         </div>
                         <input type="file" id="avatar-input" class="hidden" onchange="handleImage(event)">
                     </div>
                     <div class="flex items-center gap-4 bg-white/5 px-8 py-3.5 rounded-full border border-white/10">
-                        <div class="w-2.5 h-2.5 rounded-full bg-green-500 shadow-[0_0_10px_#22c55e] animate-pulse"></div>
-                        <span class="text-[11px] font-bold tracking-[0.4em] uppercase opacity-80" contenteditable="true" id="user-status">ACTIVE_NODE</span>
+                        <div class="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse shadow-[0_0_10px_#00ff41]"></div>
+                        <span class="text-[11px] font-bold tracking-[0.4em] uppercase" contenteditable="true" id="user-status">ACTIVE</span>
                     </div>
                 </div>
-
-                <!-- Info Flap -->
                 <div class="p-10 lg:p-20 flex flex-col justify-center">
-                    <div class="mb-12 lg:mb-16">
-                        <p class="accent-text text-[11px] font-bold tracking-[0.7em] uppercase mb-6">Identity Credential</p>
-                        <h1 class="text-5xl lg:text-7xl font-bold tracking-tighter mb-4" contenteditable="true" id="user-name">[YOUR NAME]</h1>
-                        <p class="text-2xl lg:text-3xl opacity-40 font-light" contenteditable="true" id="user-role">[YOUR ROLE]</p>
+                    <p class="accent-text text-[10px] font-bold tracking-[0.7em] uppercase mb-4">Identity Passport</p>
+                    <h1 class="text-5xl lg:text-7xl font-bold tracking-tighter mb-4" contenteditable="true" id="user-name">[NAME]</h1>
+                    <p class="text-xl lg:text-3xl opacity-40 font-light mb-10" contenteditable="true" id="user-role">[ROLE]</p>
+                    <div class="p-8 bg-white/[0.02] border border-white/5 rounded-[32px] mb-10">
+                        <p class="text-base leading-relaxed italic opacity-60 font-light" contenteditable="true" id="user-about">[Professional narrative...]</p>
                     </div>
-                    <div class="space-y-8">
-                        <div class="p-8 bg-white/[0.02] border border-white/5 rounded-[32px]">
-                            <label class="text-[9px] font-bold opacity-30 uppercase tracking-[0.3em] block mb-4">Neural Overview</label>
-                            <p class="text-lg leading-relaxed italic opacity-60 font-light" contenteditable="true" id="user-about">
-                                [Narrate your professional narrative. Summarize your core mission and the unique impact you create...]
-                            </p>
-                        </div>
-                        <div class="grid grid-cols-2 gap-10">
-                            <div>
-                                <span class="text-[9px] uppercase font-bold opacity-20 block mb-2 tracking-widest">Zone</span>
-                                <span class="text-sm font-bold mono tracking-tight" contenteditable="true" id="user-loc">[LOCATION]</span>
-                            </div>
-                            <div>
-                                <span class="text-[9px] uppercase font-bold opacity-20 block mb-2 tracking-widest">Communication</span>
-                                <span class="text-sm font-bold mono tracking-tight" contenteditable="true" id="user-lang">[LANGUAGES]</span>
-                            </div>
-                        </div>
+                    <div class="grid grid-cols-2 gap-10">
+                        <div><label class="text-[9px] uppercase font-bold opacity-20 block mb-2">Zone</label><span class="text-sm font-bold text-white" contenteditable="true" id="user-loc">[CITY]</span></div>
+                        <div><label class="text-[9px] uppercase font-bold opacity-20 block mb-2">Protocol</label><span class="text-sm font-bold text-white" contenteditable="true" id="user-lang">[LANGS]</span></div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- PAGE 2: SKILL SET -->
+        <!-- PAGE 2: SKILLS -->
         <section id="page-ecosystem" class="page-container">
             <div class="p-10 lg:p-20 h-full flex flex-col">
-                <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-16 lg:mb-20">
-                    <h2 class="text-4xl lg:text-6xl font-bold tracking-tighter uppercase">Skill Set</h2>
-                    <button onclick="addSkill()" class="edit-ui px-8 py-3 border accent-border accent-text rounded-full text-[11px] font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-all">+ Inject Data Node</button>
+                <div class="flex justify-between items-center mb-16">
+                    <h2 class="text-4xl lg:text-6xl font-bold tracking-tighter uppercase text-white">Skill Set</h2>
+                    <button onclick="addSkill()" class="edit-ui px-8 py-3 border accent-border accent-text rounded-full text-[10px] font-bold uppercase tracking-widest">+ Node</button>
                 </div>
-                <div id="skill-nodes" class="flex-1 flex flex-wrap gap-6 items-center justify-center content-center"></div>
+                <div id="skill-nodes" class="flex-1 flex flex-wrap gap-6 items-center justify-center content-center overflow-y-auto"></div>
             </div>
         </section>
 
-        <!-- PAGE 3: EXPERIENCES -->
+        <!-- PAGE 3: EXP -->
         <section id="page-path" class="page-container">
             <div class="p-10 lg:p-20 h-full flex flex-col">
-                <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-16 lg:mb-24">
-                    <h2 class="text-4xl lg:text-6xl font-bold tracking-tighter uppercase">Experiences</h2>
-                    <button onclick="addExperience()" class="edit-ui accent-text text-[11px] font-bold uppercase tracking-widest">+ Log Milestone</button>
+                <div class="flex justify-between items-center mb-16">
+                    <h2 class="text-4xl lg:text-6xl font-bold tracking-tighter uppercase text-white">Experiences</h2>
+                    <button onclick="addExperience()" class="edit-ui accent-text text-[10px] font-bold uppercase tracking-widest">+ Log</button>
                 </div>
-                <div id="path-timeline" class="space-y-12 flex-1 pr-4"></div>
+                <div id="path-timeline" class="space-y-12 flex-1"></div>
             </div>
         </section>
 
         <!-- PAGE 4: PROJECTS -->
         <section id="page-proof" class="page-container">
             <div class="p-10 lg:p-20 h-full flex flex-col">
-                <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-16">
-                    <h2 class="text-4xl lg:text-6xl font-bold tracking-tighter uppercase">Projects</h2>
-                    <button onclick="addAsset()" class="edit-ui px-8 py-3 bg-white/5 border border-white/10 rounded-full text-[11px] font-bold uppercase tracking-widest">+ New Asset</button>
+                <div class="flex justify-between items-center mb-16">
+                    <h2 class="text-4xl lg:text-6xl font-bold tracking-tighter uppercase text-white">Projects</h2>
+                    <button onclick="addAsset()" class="edit-ui px-8 py-3 bg-white/5 border border-white/10 rounded-full text-[10px] font-bold uppercase tracking-widest">+ Asset</button>
                 </div>
                 <div id="asset-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"></div>
             </div>
@@ -349,89 +317,60 @@
         <!-- PAGE 5: OUTRO -->
         <section id="page-outro" class="page-container">
             <div class="h-full flex flex-col p-10 lg:p-20">
-                <div class="mb-14 lg:mb-20">
-                    <p class="text-[10px] font-bold opacity-30 uppercase tracking-[0.5em] mb-10">Career Milestones</p>
+                <div class="mb-14"><p class="text-[10px] font-bold opacity-30 uppercase tracking-[0.5em] mb-10 text-white">Milestones</p>
                     <div class="flex flex-wrap items-center justify-between gap-6">
-                        <div id="milestone-container" class="flex flex-wrap gap-6 lg:gap-12 items-center"></div>
-                        <button onclick="addMilestone()" class="edit-ui text-[11px] font-bold accent-text uppercase tracking-widest">+ Add</button>
+                        <div id="milestone-container" class="flex flex-wrap gap-12 items-center"></div>
+                        <button onclick="addMilestone()" class="edit-ui text-[10px] font-bold accent-text uppercase">+ Add</button>
                     </div>
                 </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 flex-1">
-                    <div>
-                        <p class="text-[10px] font-bold opacity-30 uppercase tracking-[0.5em] mb-10">Featured Portfolio</p>
-                        <!-- Portfolio list converted to high-end cards -->
-                        <div id="portfolio-list" class="grid grid-cols-1 sm:grid-cols-2 gap-6"></div>
-                        <button onclick="addPortfolio()" class="edit-ui mt-8 text-[11px] font-bold text-blue-400 uppercase tracking-widest">+ Portfolio Item</button>
-                    </div>
-                    <div>
-                        <p class="text-[10px] font-bold opacity-30 uppercase tracking-[0.5em] mb-10">Communication Nodes</p>
-                        <div id="links-container" class="grid grid-cols-1 gap-4"></div>
-                        <button onclick="addSocial()" class="edit-ui mt-6 text-[11px] font-bold text-purple-400 uppercase tracking-widest">+ Node</button>
-                        
-                        <div class="mt-16 p-10 border-2 border-dashed border-white/5 bg-white/[0.01] rounded-[40px] text-center">
-                            <h3 class="text-3xl font-bold mb-8 tracking-tighter italic">Archive Identity</h3>
-                            <button onclick="closeIdentity()" class="w-full py-5 bg-white text-black font-bold uppercase text-[11px] tracking-widest hover:scale-105 transition-all">Close Passport</button>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 flex-1">
+                    <div><p class="text-[10px] font-bold opacity-30 uppercase tracking-[0.5em] mb-10 text-white">Portfolio</p><div id="portfolio-list" class="grid grid-cols-1 sm:grid-cols-2 gap-6"></div><button onclick="addPortfolio()" class="edit-ui mt-8 text-[10px] font-bold text-blue-400 uppercase">+ Item</button></div>
+                    <div><p class="text-[10px] font-bold opacity-30 uppercase tracking-[0.5em] mb-10 text-white">Communication</p><div id="links-container" class="grid grid-cols-1 gap-4"></div><button onclick="addSocial()" class="edit-ui mt-6 text-[10px] font-bold text-purple-400 uppercase">+ Node</button>
+                        <div class="mt-16 p-10 border-2 border-dashed border-white/5 rounded-[40px] text-center">
+                            <button onclick="closeIdentity()" class="w-full py-5 bg-white text-black font-bold uppercase text-[11px] tracking-widest">Close Passport</button>
                         </div>
                     </div>
-                </div>
-
-                <div class="mt-20 pt-10 border-t border-white/10 flex flex-col lg:flex-row justify-between items-center gap-8">
-                    <span class="text-[11px] font-bold tracking-[0.6em] opacity-40 uppercase">Acknowledge: Identity deployment complete</span>
-                    <div class="brand text-3xl font-bold tracking-tighter opacity-70 text-white">SKILLPORT<span class="accent-text">.</span></div>
                 </div>
             </div>
         </section>
 
-        <!-- BACK COVER -->
         <div class="back-cover" id="back-cover" onclick="reopenIdentity()">
-            <div class="flex flex-col items-center px-10 text-center">
-                <i class="fas fa-fingerprint text-7xl lg:text-9xl accent-text mb-10 animate-pulse"></i>
-                <div class="brand text-5xl lg:text-7xl font-bold tracking-[0.6em] mb-6 text-white">SKILLPORT</div>
-                <div class="h-1.5 w-24 bg-white/20 mb-10 rounded-full"></div>
-                <p class="text-2xl lg:text-3xl font-bold uppercase tracking-[0.4em] opacity-50 text-white">Thanks.</p>
-                <p class="text-[10px] mt-24 opacity-20 uppercase tracking-[0.6em] text-white">Click cover to return</p>
-            </div>
+            <i class="fas fa-fingerprint text-9xl accent-text mb-10 animate-pulse"></i>
+            <div class="brand text-5xl lg:text-8xl font-bold tracking-[0.5em] mb-4 text-white">SKILLPORT</div>
+            <p class="text-3xl font-bold uppercase tracking-[0.4em] opacity-40 text-white">Thanks.</p>
         </div>
     </main>
 
+    <!-- PC FOOTER -->
+    <footer class="desktop-only fixed bottom-0 w-full z-[3000] px-12 py-6 flex justify-center bg-black/40 backdrop-blur-xl border-t border-white/5">
+        <div class="flex items-center gap-12">
+            <button onclick="syncLocal()" class="text-[11px] font-bold uppercase tracking-[0.4em] text-white/50 hover:accent-text transition-all flex items-center gap-3"><i class="fas fa-sync-alt"></i> Sync</button>
+            <button onclick="exportDossier()" class="text-[11px] font-bold uppercase tracking-[0.4em] text-white/50 hover:text-blue-400 transition-all flex items-center gap-3"><i class="fas fa-file-pdf"></i> PDF</button>
+            <button onclick="showQR()" class="text-[11px] font-bold uppercase tracking-[0.4em] text-white/50 hover:text-purple-400 transition-all flex items-center gap-3"><i class="fas fa-qrcode"></i> Share</button>
+        </div>
+    </footer>
+
     <!-- MODAL -->
-    <div id="modal-overlay" class="fixed inset-0 z-[2000] bg-black/95 backdrop-blur-3xl hidden items-center justify-center p-6 opacity-0 transition-all duration-300">
+    <div id="modal-overlay" class="fixed inset-0 z-[9999] bg-black/98 backdrop-blur-3xl hidden items-center justify-center p-6 opacity-0 transition-all duration-300">
         <div class="bg-[#0c0c0c] border border-white/10 p-10 lg:p-14 rounded-[40px] max-w-xl w-full shadow-2xl overflow-y-auto max-h-[90dvh]" onclick="event.stopPropagation()">
-            <h3 id="modal-title" class="text-2xl font-bold uppercase tracking-widest accent-text mb-12">Commit Node Data</h3>
-            <div id="modal-fields" class="space-y-6"></div>
+            <h3 id="modal-title" class="text-2xl font-bold uppercase tracking-widest accent-text mb-12">Commit Node</h3>
+            <div id="modal-fields" class="space-y-6 text-white"></div>
             <div class="flex gap-4 mt-14 pt-10 border-t border-white/5">
-                <button onclick="saveModalData()" class="flex-1 accent-bg text-black py-4 rounded-2xl font-bold uppercase text-[11px] tracking-widest hover:scale-105 transition-transform">Apply Sync</button>
+                <button onclick="saveModalData()" class="flex-1 accent-bg text-black py-4 rounded-2xl font-bold uppercase text-[11px] tracking-widest hover:scale-105 transition-all">Apply Sync</button>
                 <button onclick="deleteItem()" class="px-8 py-4 bg-red-500/10 text-red-500 rounded-2xl hover:bg-red-500 transition-all"><i class="fas fa-trash"></i></button>
             </div>
         </div>
     </div>
 
-    <!-- FOOTER TOOLBAR -->
-    <div class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[200] flex items-center gap-6 lg:gap-12 px-8 py-4 bg-black/90 backdrop-blur-3xl rounded-full border border-white/10 shadow-2xl edit-ui w-max max-w-[95vw]">
-        <button onclick="syncLocal()" class="text-[9px] lg:text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 hover:accent-text transition-colors">
-            <i class="fas fa-sync-alt" id="sync-icon"></i> <span>Sync</span>
-        </button>
-        <div class="w-px h-5 bg-white/20"></div>
-        <button onclick="exportDossier()" class="text-[9px] lg:text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 hover:accent-text transition-colors">
-            <i class="fas fa-file-pdf"></i> <span>PDF</span>
-        </button>
-        <div class="w-px h-5 bg-white/20"></div>
-        <button onclick="showQR()" class="text-[9px] lg:text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 hover:accent-text transition-colors">
-            <i class="fas fa-qrcode"></i> <span>Share</span>
-        </button>
-    </div>
-
     <script>
         const pages = ['profile', 'ecosystem', 'path', 'proof', 'outro'];
         let currentPageIndex = 0;
-
         let state = {
             mode: 'edit', theme: 'space', accent: 'green',
             skills: [], experience: [], assets: [], milestones: [], portfolio: [], socials: [],
             user: {
-                name: '[YOUR NAME]', role: '[YOUR ROLE]', status: 'NODE_ACTIVE', about: '[Narrate your expertise...]',
-                loc: '[CITY]', lang: '[LANGUAGES]', avatar: 'https://images.unsplash.com/photo-1633332755192-727a05c4013d?auto=format&fit=crop&q=80&w=400'
+                name: '[YOUR NAME]', role: '[YOUR ROLE]', status: 'ACTIVE', about: '[Professional narrative...]',
+                loc: '[CITY]', lang: '[LANGS]', avatar: 'https://images.unsplash.com/photo-1633332755192-727a05c4013d?auto=format&fit=crop&q=80&w=400'
             }
         };
 
@@ -442,11 +381,20 @@
             setTimeout(() => { document.getElementById('loading-overlay').style.opacity = '0'; setTimeout(() => document.getElementById('loading-overlay').style.display = 'none', 500); }, 1200);
         };
 
+        function toggleDrawer() { 
+            const d = document.getElementById('side-drawer');
+            d.classList.toggle('active');
+            document.getElementById('menu-icon').className = d.classList.contains('active') ? 'fas fa-times' : 'fas fa-bars';
+        }
+
+        function toggleActionMenu() { document.getElementById('action-popup').classList.toggle('active'); }
+
         function showPage(id) {
             currentPageIndex = pages.indexOf(id);
             document.querySelectorAll('.page-container').forEach(p => p.classList.remove('active'));
             const target = document.getElementById(`page-${id}`);
             if(target) target.classList.add('active');
+            window.scrollTo(0,0);
         }
 
         function nextPage() { currentPageIndex = (currentPageIndex + 1) % pages.length; showPage(pages[currentPageIndex]); }
@@ -459,9 +407,13 @@
         function setMode(m) {
             state.mode = m;
             document.body.classList.toggle('preview-mode', m === 'preview');
-            document.getElementById('btn-edit').className = `flex-1 py-1.5 rounded-xl text-[10px] font-bold uppercase transition-all ${m === 'edit' ? 'bg-white/10' : ''}`;
-            document.getElementById('btn-preview').className = `flex-1 py-1.5 rounded-xl text-[10px] font-bold uppercase transition-all ${m === 'preview' ? 'bg-white/10' : ''}`;
+            const btns = ['m-btn-edit', 'm-btn-preview', 'pc-btn-edit', 'pc-btn-preview'];
+            btns.forEach(id => {
+                const btn = document.getElementById(id);
+                if (btn) btn.classList.toggle('bg-white/10', (id.includes('edit') && m === 'edit') || (id.includes('preview') && m === 'preview'));
+            });
             document.querySelectorAll('[contenteditable]').forEach(el => el.contentEditable = (m === 'edit'));
+            document.getElementById('side-drawer').classList.remove('active');
             saveState();
         }
 
@@ -477,54 +429,34 @@
         }
 
         function renderSkills() {
-            const cont = document.getElementById('skill-nodes');
-            cont.innerHTML = state.skills.map((s, i) => `<div onclick="openModal('skills', ${i})" class="bg-white/5 border border-white/10 rounded-3xl p-8 min-w-[140px] md:min-w-[160px] text-center cursor-pointer hover:border-accent transition-all group shadow-xl"><i class="fas ${s.icon} text-2xl md:text-3xl accent-text opacity-40 group-hover:opacity-100 mb-4 md:mb-6 transition-all"></i><p class="text-xs font-bold uppercase tracking-widest">${s.name}</p></div>`).join('') || '<p class="opacity-10 text-[11px] uppercase tracking-[0.5em]">Network Offline</p>';
+            document.getElementById('skill-nodes').innerHTML = state.skills.map((s, i) => `<div onclick="openModal('skills', ${i})" class="bg-white/5 border border-white/10 rounded-3xl p-8 min-w-[160px] text-center cursor-pointer hover:border-accent transition-all group shadow-xl"><i class="fas ${s.icon} text-3xl accent-text opacity-40 group-hover:opacity-100 mb-6 transition-all"></i><p class="text-xs font-bold uppercase tracking-widest text-white">${s.name}</p></div>`).join('') || '<p class="opacity-10 text-[11px] uppercase tracking-[0.5em]">Offline</p>';
         }
 
         function renderExperience() {
-            const cont = document.getElementById('path-timeline');
-            cont.innerHTML = state.experience.map((e, i) => `<div onclick="openModal('experience', ${i})" class="group flex gap-8 lg:gap-12 cursor-pointer hover:translate-x-3 transition-all"><div class="w-24 lg:w-32 shrink-0 text-[11px] font-bold accent-text pt-1 mono uppercase tracking-tighter">${e.time || '20XX'}</div><div class="pb-12 border-l-2 border-white/10 pl-8 lg:pl-12 relative"><div class="absolute -left-[11px] top-1.5 w-5 h-5 rounded-full bg-white group-hover:bg-accent group-hover:scale-125 transition-all"></div><h4 class="text-2xl lg:text-3xl font-bold tracking-tight mb-3 uppercase">${e.role || 'ROLE'}</h4><p class="text-sm opacity-40 mb-6 font-medium tracking-wide">${e.company || 'COMPANY'}</p><p class="text-[11px] opacity-60 italic leading-relaxed max-w-2xl">${e.desc || '...'}</p></div></div>`).join('') || '<p class="opacity-10 py-10 uppercase tracking-[0.5em]">No Data Logs</p>';
+            document.getElementById('path-timeline').innerHTML = state.experience.map((e, i) => `<div onclick="openModal('experience', ${i})" class="group flex gap-8 cursor-pointer hover:translate-x-3 transition-all"><div class="w-24 shrink-0 text-[11px] font-bold accent-text pt-1 mono uppercase tracking-tighter">${e.time || '20XX'}</div><div class="pb-12 border-l-2 border-white/10 pl-8 relative text-white"><div class="absolute -left-[11px] top-1.5 w-5 h-5 rounded-full bg-white group-hover:bg-accent group-hover:scale-125 transition-all"></div><h4 class="text-2xl lg:text-3xl font-bold tracking-tight mb-3 uppercase">${e.role || 'ROLE'}</h4><p class="text-sm opacity-40 mb-6 font-medium">${e.company || 'COMPANY'}</p><p class="text-[11px] opacity-60 italic leading-relaxed">${e.desc || '...'}</p></div></div>`).join('') || '<p class="opacity-10 py-10 uppercase tracking-[0.5em]">Empty Log</p>';
         }
 
         function renderAssets() {
-            const cont = document.getElementById('asset-grid');
-            cont.innerHTML = state.assets.map((a, i) => `<div onclick="openModal('assets', ${i})" class="bg-white/5 border border-white/10 p-8 lg:p-12 rounded-[40px] hover:border-accent transition-all cursor-pointer group shadow-2xl"><i class="fas fa-file-code text-2xl md:text-3xl opacity-20 accent-text mb-10"></i><h4 class="text-xl font-bold mb-3 uppercase tracking-tight">${a.name || 'ASSET'}</h4><p class="text-[13px] opacity-40 mb-8 leading-relaxed font-light">${a.desc || '...'}</p><div class="flex items-center gap-3 text-[11px] font-bold accent-text uppercase tracking-widest"><i class="fas fa-check-circle"></i> VERIFIED_NODE</div></div>`).join('') || '<p class="opacity-10 py-10 col-span-full text-center tracking-[0.5em]">No Assets Found</p>';
+            document.getElementById('asset-grid').innerHTML = state.assets.map((a, i) => `<div onclick="openModal('assets', ${i})" class="bg-white/5 border border-white/10 p-8 rounded-[40px] hover:border-accent transition-all cursor-pointer shadow-2xl text-white"><i class="fas fa-file-code text-3xl opacity-20 accent-text mb-10"></i><h4 class="text-xl font-bold mb-3 uppercase tracking-tight">${a.name || 'ASSET'}</h4><p class="text-[13px] opacity-40 mb-8 leading-relaxed font-light">${a.desc || '...'}</p><div class="flex items-center gap-3 text-[11px] font-bold accent-text uppercase tracking-widest"><i class="fas fa-check-circle"></i> VERIFIED_NODE</div></div>`).join('') || '<p class="opacity-10 py-10 col-span-full text-center tracking-[0.5em]">Assets Empty</p>';
         }
 
         function renderOutro() {
-            document.getElementById('milestone-container').innerHTML = state.milestones.map((m, i) => `<div onclick="openModal('milestones', ${i})" class="flex items-center gap-3 text-xs font-bold uppercase tracking-widest text-yellow-500 cursor-pointer hover:scale-110 transition-all"><i class="fas fa-award"></i> ${m.text}</div>`).join('') || '<span class="opacity-10 text-[11px]">EMPTY</span>';
-            
-            // Enhanced portfolio cards
-            document.getElementById('portfolio-list').innerHTML = state.portfolio.map((p, i) => `
-                <div onclick="openModal('portfolio', ${i})" class="port-item group cursor-pointer">
-                    <div class="flex justify-between items-start">
-                        <i class="fas fa-layer-group text-lg opacity-30 group-hover:text-blue-400 transition-colors"></i>
-                        <i class="fas fa-arrow-right text-[10px] opacity-20 group-hover:opacity-100 group-hover:translate-x-1 transition-all"></i>
-                    </div>
-                    <div>
-                        <span class="text-[10px] font-bold opacity-30 uppercase tracking-[0.2em] mb-1 block">Work Node</span>
-                        <h4 class="text-sm font-bold uppercase tracking-widest leading-tight">${p.title}</h4>
-                    </div>
-                </div>
-            `).join('');
-
-            document.getElementById('links-container').innerHTML = state.socials.map((s, i) => `<div onclick="openModal('socials', ${i})" class="p-6 bg-white/5 rounded-3xl border border-white/5 cursor-pointer hover:border-purple-400 transition-all"><div class="flex items-center gap-6"><i class="${s.icon} text-lg opacity-30 group-hover:text-purple-400 transition-colors"></i><span class="text-sm font-bold uppercase tracking-widest">${s.label}</span></div></div>`).join('');
+            document.getElementById('milestone-container').innerHTML = state.milestones.map((m, i) => `<div onclick="openModal('milestones', ${i})" class="flex items-center gap-3 text-xs font-bold uppercase tracking-widest text-yellow-500 cursor-pointer hover:scale-110 transition-all"><i class="fas fa-award"></i> ${m.text}</div>`).join('') || '<span class="opacity-10 text-[11px]">N/A</span>';
+            document.getElementById('portfolio-list').innerHTML = state.portfolio.map((p, i) => `<div onclick="openModal('portfolio', ${i})" class="bg-white/5 border border-white/10 rounded-2xl aspect-square flex flex-col justify-center items-center text-center p-4 hover:border-accent transition-all cursor-pointer text-white"><div><i class="fas fa-layer-group text-lg opacity-30 group-hover:text-blue-400"></i></div><h4 class="text-[10px] font-bold uppercase mt-4 tracking-widest">${p.title}</h4></div>`).join('');
+            document.getElementById('links-container').innerHTML = state.socials.map((s, i) => `<div onclick="openModal('socials', ${i})" class="p-5 bg-white/5 rounded-2xl border border-white/5 cursor-pointer hover:border-purple-400 transition-all flex items-center gap-6 text-white"><i class="${s.icon} text-lg opacity-30 group-hover:text-purple-400"></i><span class="text-sm font-bold uppercase tracking-widest">${s.label}</span></div>`).join('');
         }
 
         const SCHEMAS = { skills: ['name', 'icon'], experience: ['company', 'role', 'time', 'desc'], assets: ['name', 'desc', 'url'], milestones: ['text'], portfolio: ['title', 'url'], socials: ['label', 'icon', 'url'] };
-
         function openModal(type, idx) {
             if (state.mode === 'preview' && (type === 'assets' || type === 'portfolio' || type === 'socials')) {
                 if (state[type][idx].url && state[type][idx].url !== '#') window.open(state[type][idx].url, '_blank');
                 return;
             }
             activeType = type; activeIdx = idx;
-            const item = state[type][idx];
-            document.getElementById('modal-fields').innerHTML = SCHEMAS[type].map(key => `<div><label class="text-[10px] font-bold uppercase opacity-30 mb-3 block tracking-widest">${key}</label><input type="text" id="inp-${key}" value="${item[key] || ''}" class="w-full bg-white/5 border border-white/10 rounded-2xl p-5 text-sm text-white outline-none focus:border-accent"></div>`).join('');
+            document.getElementById('modal-fields').innerHTML = SCHEMAS[type].map(key => `<div><label class="text-[10px] font-bold uppercase opacity-30 mb-3 block tracking-widest text-white">${key}</label><input type="text" id="inp-${key}" value="${state[type][idx][key] || ''}" class="w-full bg-white/5 border border-white/10 rounded-2xl p-5 text-sm text-white outline-none focus:border-accent"></div>`).join('');
             document.getElementById('modal-overlay').style.display = 'flex';
             setTimeout(() => document.getElementById('modal-overlay').style.opacity = '1', 10);
         }
-
         function closeModal() { document.getElementById('modal-overlay').style.opacity = '0'; setTimeout(() => document.getElementById('modal-overlay').style.display = 'none', 300); }
         function saveModalData() { SCHEMAS[activeType].forEach(key => { state[activeType][activeIdx][key] = document.getElementById(`inp-${key}`).value; }); refreshUI(); closeModal(); saveState(); }
         function deleteItem() { state[activeType].splice(activeIdx, 1); refreshUI(); closeModal(); saveState(); }
@@ -537,46 +469,16 @@
         function addSocial() { state.socials.push({ label: 'Social', icon: 'fab fa-github', url: '#' }); refreshUI(); openModal('socials', state.socials.length - 1); }
 
         function handleImage(e) { const file = e.target.files[0]; if(file) { const reader = new FileReader(); reader.onload = (ev) => { state.user.avatar = ev.target.result; refreshUI(); saveState(); }; reader.readAsDataURL(file); } }
-
-        function saveState() {
-            state.user.name = document.getElementById('user-name').innerText;
-            state.user.role = document.getElementById('user-role').innerText;
-            state.user.about = document.getElementById('user-about').innerText;
-            state.user.status = document.getElementById('user-status').innerText;
-            state.user.loc = document.getElementById('user-loc').innerText;
-            state.user.lang = document.getElementById('user-lang').innerText;
-            localStorage.setItem('skillport_v18_mobile_large', JSON.stringify(state));
+        function showToast(msg) { const t = document.getElementById('toast'); t.innerText = msg; t.classList.add('visible'); setTimeout(() => t.classList.remove('visible'), 2500); }
+        function saveState() { 
+            state.user.name = document.getElementById('user-name').innerText; state.user.role = document.getElementById('user-role').innerText; state.user.about = document.getElementById('user-about').innerText; state.user.status = document.getElementById('user-status').innerText; state.user.loc = document.getElementById('user-loc').innerText; state.user.lang = document.getElementById('user-lang').innerText; 
+            localStorage.setItem('skillport_v23', JSON.stringify(state)); 
         }
-
-        function loadState() { const raw = localStorage.getItem('skillport_v18_mobile_large'); if(raw) { Object.assign(state, JSON.parse(raw)); applyFullTheme(); setMode(state.mode); } }
-
-        function syncLocal() { saveState(); const icon = document.getElementById('sync-icon'); icon.classList.add('fa-spin'); setTimeout(() => icon.classList.remove('fa-spin'), 800); }
-
-        function showToast(msg) {
-            const t = document.getElementById('toast');
-            t.innerText = msg; t.classList.add('visible');
-            setTimeout(() => t.classList.remove('visible'), 3000);
-        }
-
-        async function exportDossier() {
-            const frame = document.querySelector('.passport-frame');
-            const canvas = await html2canvas(frame, { backgroundColor: getComputedStyle(document.body).backgroundColor, scale: 2 });
-            const pdf = new jspdf.jsPDF('l', 'mm', 'a4');
-            pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, 297, 210);
-            pdf.save(`SkillPort_Dossier.pdf`);
-        }
-
-        function showQR() {
-            const div = document.createElement('div');
-            div.className = 'fixed inset-0 z-[2000] bg-black/95 flex items-center justify-center p-8 cursor-pointer';
-            div.onclick = () => div.remove();
-            const canvas = document.createElement('canvas');
-            div.appendChild(canvas);
-            document.body.appendChild(div);
-            QRCode.toCanvas(canvas, window.location.href, { width: 280, margin: 1 });
-        }
-
-        function closeIdentity() { document.getElementById('main-frame').classList.add('closed'); }
+        function loadState() { const raw = localStorage.getItem('skillport_v23'); if(raw) { Object.assign(state, JSON.parse(raw)); applyFullTheme(); setMode(state.mode); } }
+        function syncLocal() { saveState(); showToast('Synchronized'); if(document.getElementById('action-popup')) document.getElementById('action-popup').classList.remove('active'); }
+        async function exportDossier() { showToast('Compiling PDF...'); const main = document.querySelector('.passport-frame'); const canvas = await html2canvas(main, { backgroundColor: getComputedStyle(document.body).backgroundColor, scale: 2 }); const pdf = new jspdf.jsPDF('l', 'mm', 'a4'); pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, 297, 210); pdf.save(`SkillPort_Dossier.pdf`); if(document.getElementById('action-popup')) document.getElementById('action-popup').classList.remove('active'); }
+        function showQR() { const div = document.createElement('div'); div.className = 'fixed inset-0 z-[10000] bg-black/95 flex items-center justify-center p-8 cursor-pointer'; div.onclick = () => div.remove(); const canvas = document.createElement('canvas'); div.appendChild(canvas); document.body.appendChild(div); QRCode.toCanvas(canvas, window.location.href, { width: 280, margin: 1 }); if(document.getElementById('action-popup')) document.getElementById('action-popup').classList.remove('active'); }
+        function closeIdentity() { document.getElementById('main-frame').classList.add('closed'); if(document.getElementById('action-popup')) document.getElementById('action-popup').classList.remove('active'); }
         function reopenIdentity() { document.getElementById('main-frame').classList.remove('closed'); }
     </script>
 </body>
