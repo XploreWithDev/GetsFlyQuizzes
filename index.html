@@ -73,8 +73,8 @@
         /* --- PASSPORT ARCHITECTURE --- */
         .passport-frame {
             perspective: 2500px;
-            width: 85%; /* Reduced width to accommodate exterior arrows */
-            max-width: 1000px;
+            width: 92%;
+            max-width: 1100px;
             margin: 120px auto 40px auto;
             position: relative;
             flex-grow: 1;
@@ -82,12 +82,12 @@
             transform-style: preserve-3d;
         }
 
-        .passport-frame.closed { transform: rotateY(-180deg) scale(0.9); }
+        .passport-frame.closed { transform: rotateY(-180deg); }
 
         .page-container {
             width: 100%;
             height: 100%;
-            min-height: 70dvh;
+            min-height: 75dvh;
             background: var(--page-bg);
             border: 2px solid var(--border);
             border-radius: 32px;
@@ -113,13 +113,13 @@
             100% { transform: rotateY(0deg) translateX(0); opacity: 1; }
         }
 
-        /* EXTERIOR NAVIGATION ARROWS */
+        /* NAVIGATION ARROWS */
         .nav-arrow {
             position: fixed;
             top: 50%;
             transform: translateY(-50%);
-            width: 60px;
-            height: 60px;
+            width: 55px;
+            height: 55px;
             background: rgba(0,0,0,0.85);
             border: 2px solid var(--accent);
             border-radius: 50%;
@@ -144,26 +144,27 @@
             100% { transform: scale(1.5); opacity: 0; }
         }
 
-        /* Arrow Placement Outside Frame */
-        .nav-arrow.left { left: 40px; }
-        .nav-arrow.right { right: 40px; }
-
-        /* MOBILE OPTIMIZATIONS: ZOOM OUT & ARROW STACK */
+        /* MOBILE OPTIMIZATIONS: FULL SIZE PAGE */
         @media (max-width: 1024px) {
             .passport-frame { 
-                width: 90%;
+                width: 100%; /* Spans full width */
                 margin-top: 130px; 
                 margin-bottom: 140px; 
-                transform: scale(0.85); /* Proper zoom out for mobile fit */
-                transform-origin: top center;
+                transform: scale(1); /* Reset scale to make it feel large */
+            }
+            .page-container {
+                border-radius: 0; /* Remove rounded corners for full bleed feel */
+                border-left: none;
+                border-right: none;
             }
             .nav-arrow { top: auto; bottom: 100px; transform: none; width: 50px; height: 50px; }
-            .nav-arrow.left { left: calc(50% - 70px); }
-            .nav-arrow.right { right: calc(50% - 70px); }
+            .nav-arrow.left { left: 15px; }
+            .nav-arrow.right { right: 15px; }
         }
         
         @media (min-width: 1025px) {
-            /* Keep exterior side placement for laptops */
+            .nav-arrow.left { left: 40px; }
+            .nav-arrow.right { right: 40px; }
         }
 
         .edit-ui { display: block; }
@@ -181,11 +182,14 @@
         [contenteditable="true"]:focus { outline: none; background: rgba(128,128,128,0.1); border-radius: 4px; padding: 0 4px; }
         
         .back-cover {
-            width: 100%; height: 100%; min-height: 70dvh; background: #080808;
+            width: 100%; height: 100%; min-height: 75dvh; background: #080808;
             border: 3px solid var(--accent); border-radius: 32px;
             position: absolute; top: 0; left: 0; transform: rotateY(180deg);
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             backface-visibility: hidden; z-index: 5;
+        }
+        @media (max-width: 1024px) {
+            .back-cover { border-radius: 0; }
         }
 
         #toast {
@@ -198,6 +202,8 @@
     </style>
 </head>
 <body class="theme-space acc-green">
+
+    <div class="leaf-container" id="leaf-layer"></div>
 
     <div id="loading-overlay">
         <div class="brand text-3xl font-bold tracking-[0.6em] mb-4 text-white">SKILLPORT</div>
@@ -456,7 +462,7 @@
 
         function renderExperience() {
             const cont = document.getElementById('path-timeline');
-            cont.innerHTML = state.experience.map((e, i) => `<div onclick="openModal('experience', ${i})" class="group flex gap-8 lg:gap-12 cursor-pointer hover:translate-x-3 transition-all"><div class="w-24 lg:w-32 shrink-0 text-[11px] font-bold accent-text pt-1 mono uppercase tracking-tighter">${e.time || '20XX'}</div><div class="pb-12 border-l-2 border-white/10 pl-8 lg:pl-12 relative"><div class="absolute -left-[11px] top-1.5 w-5 h-5 rounded-full bg-white group-hover:bg-accent group-hover:scale-125 transition-all"></div><h4 class="text-2xl lg:text-3xl font-bold tracking-tight mb-3 uppercase">${e.role || 'ROLE'}</h4><p class="text-sm opacity-40 mb-6 font-medium tracking-wide">${e.company || 'COMPANY'}</p><p class="text-[11px] opacity-60 italic leading-relaxed max-w-2xl">${e.desc || '...'}</p></div></div>`).join('') || '<p class="opacity-10 py-10 uppercase tracking-[0.5em]">No Data Logs</p>';
+            cont.innerHTML = state.experience.map((e, i) => `<div onclick="openModal('experience', ${i})" class="group flex gap-8 lg:gap-12 cursor-pointer hover:translate-x-3 transition-all"><div class="w-24 lg:w-32 shrink-0 text-[11px] font-bold accent-text pt-1 mono uppercase tracking-tighter">${e.time || '20XX'}</div><div class="pb-12 border-l-2 border-white/10 pl-8 lg:pl-12 relative"><div class="absolute -left-[11px] top-1.5 w-5 h-5 rounded-full bg-white group-hover:bg-accent group-hover:scale-125 transition-all"></div><h4 class="text-2xl lg:text-3xl font-bold tracking-tight mb-3 uppercase">${e.role || 'ROLE'}</h4><p class="text-sm opacity-40 mb-6 font-medium tracking-wide">${e.company || 'COMPANY'}</p><p class="text-xs lg:text-sm opacity-60 italic leading-relaxed max-w-2xl">${e.desc || '...'}</p></div></div>`).join('') || '<p class="opacity-10 py-10 uppercase tracking-[0.5em]">No Data Logs</p>';
         }
 
         function renderAssets() {
@@ -467,7 +473,7 @@
         function renderOutro() {
             document.getElementById('milestone-container').innerHTML = state.milestones.map((m, i) => `<div onclick="openModal('milestones', ${i})" class="flex items-center gap-3 text-xs font-bold uppercase tracking-widest text-yellow-500 cursor-pointer hover:scale-110 transition-all"><i class="fas fa-award"></i> ${m.text}</div>`).join('') || '<span class="opacity-10 text-[11px]">EMPTY</span>';
             document.getElementById('portfolio-list').innerHTML = state.portfolio.map((p, i) => `<div onclick="openModal('portfolio', ${i})" class="group flex items-center justify-between p-6 bg-white/5 rounded-3xl border border-white/5 cursor-pointer hover:border-blue-400 transition-all"><div class="flex items-center gap-6"><i class="fas fa-layer-group opacity-30 group-hover:text-blue-400 transition-colors"></i><span class="text-sm font-bold uppercase tracking-widest">${p.title}</span></div><i class="fas fa-chevron-right text-[11px] opacity-20 group-hover:opacity-100 transition-all"></i></div>`).join('');
-            document.getElementById('links-container').innerHTML = state.socials.map((s, i) => `<div onclick="openModal('socials', ${i})" class="p-6 bg-white/5 rounded-3xl border border-white/5 cursor-pointer hover:border-purple-400 transition-all"><div class="flex items-center gap-6"><i class="${s.icon} text-lg opacity-30 group-hover:text-purple-400 transition-colors"></i><span class="text-sm font-bold uppercase tracking-widest">${s.label}</span></div></div>`).join('');
+            document.getElementById('links-container').innerHTML = state.socials.map((s, i) => `<div onclick="openModal('socials', ${i})" class="p-6 bg-white/5 rounded-3xl border border-white/10 cursor-pointer hover:border-purple-400 transition-all"><div class="flex items-center gap-6"><i class="${s.icon} text-lg opacity-30 group-hover:text-purple-400 transition-colors"></i><span class="text-sm font-bold uppercase tracking-widest">${s.label}</span></div></div>`).join('');
         }
 
         const SCHEMAS = { skills: ['name', 'icon'], experience: ['company', 'role', 'time', 'desc'], assets: ['name', 'desc', 'url'], milestones: ['text'], portfolio: ['title', 'url'], socials: ['label', 'icon', 'url'] };
@@ -504,10 +510,10 @@
             state.user.status = document.getElementById('user-status').innerText;
             state.user.loc = document.getElementById('user-loc').innerText;
             state.user.lang = document.getElementById('user-lang').innerText;
-            localStorage.setItem('skillport_v16_zoom_out', JSON.stringify(state));
+            localStorage.setItem('skillport_v17_large_mobile', JSON.stringify(state));
         }
 
-        function loadState() { const raw = localStorage.getItem('skillport_v16_zoom_out'); if(raw) { Object.assign(state, JSON.parse(raw)); applyFullTheme(); setMode(state.mode); } }
+        function loadState() { const raw = localStorage.getItem('skillport_v17_large_mobile'); if(raw) { Object.assign(state, JSON.parse(raw)); applyFullTheme(); setMode(state.mode); } }
 
         function syncLocal() { saveState(); const icon = document.getElementById('sync-icon'); icon.classList.add('fa-spin'); setTimeout(() => icon.classList.remove('fa-spin'), 800); }
 
