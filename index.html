@@ -46,13 +46,13 @@
             position: relative;
             top: 50%;
             transform: translateY(-50%);
-            transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 1.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+            transform-style: preserve-3d;
         }
 
+        /* Closing Animation Class - Flipped state showing the back side of the frame */
         .passport-frame.closed {
-            transform: translateY(-50%) rotateY(-180deg) scale(0.8);
-            pointer-events: none;
-            opacity: 0.5;
+            transform: translateY(-50%) rotateY(-180deg);
         }
 
         .page-container {
@@ -62,11 +62,32 @@
             border: 2px solid var(--border);
             border-radius: 24px;
             box-shadow: 0 40px 100px -20px rgba(0,0,0,0.9), inset 0 0 60px rgba(255,255,255,0.03);
-            position: absolute; /* Stack pages on top of each other */
+            position: absolute;
             top: 0;
             left: 0;
             display: none;
             overflow: hidden;
+            backface-visibility: hidden; /* Hide content when flipped */
+        }
+
+        /* BACK COVER DESIGN */
+        .back-cover {
+            width: 100%;
+            height: 100%;
+            background: #080808;
+            border: 3px solid var(--accent);
+            border-radius: 24px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform: rotateY(180deg); /* Facing away initially */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            backface-visibility: hidden;
+            box-shadow: 0 0 50px rgba(0,0,0,1);
+            z-index: 5;
         }
 
         .page-container.active {
@@ -80,7 +101,6 @@
             100% { transform: rotateY(0deg) translateX(0); opacity: 1; }
         }
 
-        /* Interactive Nav Arrows */
         .nav-arrow {
             position: absolute;
             top: 50%;
@@ -157,7 +177,7 @@
     <div id="loading-overlay">
         <div class="brand text-3xl font-bold tracking-[0.5em] mb-4">SKILLPORT</div>
         <div class="w-24 h-px bg-white/10 relative overflow-hidden">
-            <div class="absolute inset-0 accent-bg w-1/2 animate-[loading_1.5s_infinite_linear]"></div>
+            <div class="absolute inset-0 accent-bg w-1/2 animate-[loading_1s_infinite_linear]"></div>
         </div>
     </div>
     <style> @keyframes loading { 0% { transform: translateX(-100%); } 100% { transform: translateX(200%); } } </style>
@@ -285,8 +305,8 @@
                         <button onclick="addSocial()" class="edit-ui mt-6 text-[10px] font-bold text-purple-400 uppercase tracking-widest">+ Add Channel</button>
                         
                         <div class="mt-14 p-10 border-2 border-dashed border-white/5 bg-white/[0.01] rounded-3xl text-center">
-                            <h3 class="text-3xl font-bold mb-6 tracking-tighter">Mission Completed?</h3>
-                            <button onclick="closeIdentity()" class="px-10 py-4 bg-white text-black font-bold uppercase text-[11px] tracking-widest hover:scale-105 transition-all">Close Digital Passport</button>
+                            <h3 class="text-3xl font-bold mb-6 tracking-tighter italic">Intelligence Archive</h3>
+                            <button onclick="closeIdentity()" class="px-10 py-4 bg-white text-black font-bold uppercase text-[11px] tracking-widest hover:scale-105 transition-all">Close Passport</button>
                         </div>
                     </div>
                 </div>
@@ -301,6 +321,17 @@
                 </div>
             </div>
         </section>
+
+        <!-- BACK COVER -->
+        <div class="back-cover" id="back-cover" onclick="reopenIdentity()">
+            <div class="flex flex-col items-center">
+                <i class="fas fa-fingerprint text-8xl accent-text mb-8 animate-pulse"></i>
+                <div class="brand text-6xl font-bold tracking-[0.5em] mb-4">SKILLPORT</div>
+                <div class="h-1 w-24 bg-white/20 mb-8 rounded-full"></div>
+                <p class="text-2xl font-bold uppercase tracking-[0.3em] opacity-40">Thanks.</p>
+                <p class="text-[10px] mt-20 opacity-20 uppercase tracking-[0.5em]">Click cover to reopen system</p>
+            </div>
+        </div>
     </main>
 
     <!-- Modal Engine -->
@@ -478,11 +509,11 @@
             state.user.status = document.getElementById('user-status').innerText;
             state.user.loc = document.getElementById('user-loc').innerText;
             state.user.lang = document.getElementById('user-lang').innerText;
-            localStorage.setItem('skillport_v9_final', JSON.stringify(state));
+            localStorage.setItem('skillport_v10_final', JSON.stringify(state));
         }
 
         function loadState() {
-            const raw = localStorage.getItem('skillport_v9_final');
+            const raw = localStorage.getItem('skillport_v10_final');
             if(raw) { Object.assign(state, JSON.parse(raw)); setTheme(state.theme); setMode(state.mode); }
         }
 
@@ -509,7 +540,11 @@
         function closeIdentity() {
             const f = document.getElementById('main-frame');
             f.classList.add('closed');
-            setTimeout(() => { f.classList.remove('closed'); showPage('profile'); }, 3000);
+        }
+
+        function reopenIdentity() {
+            const f = document.getElementById('main-frame');
+            f.classList.remove('closed');
         }
     </script>
 </body>
