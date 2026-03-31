@@ -127,10 +127,11 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            z-index: 500;
+            z-index: 999; /* Highest priority */
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             color: var(--accent);
             backdrop-filter: blur(10px);
+            touch-action: manipulation;
         }
 
         .nav-arrow::before {
@@ -157,9 +158,10 @@
                 border-left: none;
                 border-right: none;
             }
-            .nav-arrow { top: auto; bottom: 100px; transform: none; width: 50px; height: 50px; }
-            .nav-arrow.left { left: 15px; }
-            .nav-arrow.right { right: 15px; }
+            /* Smaller arrows on mobile and repositioned to avoid footer interference */
+            .nav-arrow { top: auto; bottom: 100px; transform: none; width: 44px; height: 44px; }
+            .nav-arrow.left { left: 20px; }
+            .nav-arrow.right { right: 20px; }
         }
         
         @media (min-width: 1025px) {
@@ -199,6 +201,24 @@
             opacity: 0; transition: 0.4s; pointer-events: none;
         }
         #toast.visible { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+        /* Portfolio Item Enhancements */
+        .port-item {
+            aspect-ratio: 1/1;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+        }
+        .port-item:hover {
+            border-color: var(--accent);
+            background: rgba(255,255,255,0.06);
+            transform: translateY(-5px);
+        }
     </style>
 </head>
 <body class="theme-space acc-green">
@@ -340,8 +360,9 @@
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 flex-1">
                     <div>
                         <p class="text-[10px] font-bold opacity-30 uppercase tracking-[0.5em] mb-10">Featured Portfolio</p>
-                        <div id="portfolio-list" class="space-y-6"></div>
-                        <button onclick="addPortfolio()" class="edit-ui mt-8 text-[11px] font-bold text-blue-400 uppercase tracking-widest">+ Port Node</button>
+                        <!-- Portfolio list converted to high-end cards -->
+                        <div id="portfolio-list" class="grid grid-cols-1 sm:grid-cols-2 gap-6"></div>
+                        <button onclick="addPortfolio()" class="edit-ui mt-8 text-[11px] font-bold text-blue-400 uppercase tracking-widest">+ Portfolio Item</button>
                     </div>
                     <div>
                         <p class="text-[10px] font-bold opacity-30 uppercase tracking-[0.5em] mb-10">Communication Nodes</p>
@@ -375,7 +396,7 @@
     </main>
 
     <!-- MODAL -->
-    <div id="modal-overlay" class="fixed inset-0 z-[1000] bg-black/95 backdrop-blur-3xl hidden items-center justify-center p-6 opacity-0 transition-all duration-300">
+    <div id="modal-overlay" class="fixed inset-0 z-[2000] bg-black/95 backdrop-blur-3xl hidden items-center justify-center p-6 opacity-0 transition-all duration-300">
         <div class="bg-[#0c0c0c] border border-white/10 p-10 lg:p-14 rounded-[40px] max-w-xl w-full shadow-2xl overflow-y-auto max-h-[90dvh]" onclick="event.stopPropagation()">
             <h3 id="modal-title" class="text-2xl font-bold uppercase tracking-widest accent-text mb-12">Commit Node Data</h3>
             <div id="modal-fields" class="space-y-6"></div>
@@ -462,7 +483,7 @@
 
         function renderExperience() {
             const cont = document.getElementById('path-timeline');
-            cont.innerHTML = state.experience.map((e, i) => `<div onclick="openModal('experience', ${i})" class="group flex gap-8 lg:gap-12 cursor-pointer hover:translate-x-3 transition-all"><div class="w-24 lg:w-32 shrink-0 text-[11px] font-bold accent-text pt-1 mono uppercase tracking-tighter">${e.time || '20XX'}</div><div class="pb-12 border-l-2 border-white/10 pl-8 lg:pl-12 relative"><div class="absolute -left-[11px] top-1.5 w-5 h-5 rounded-full bg-white group-hover:bg-accent group-hover:scale-125 transition-all"></div><h4 class="text-2xl lg:text-3xl font-bold tracking-tight mb-3 uppercase">${e.role || 'ROLE'}</h4><p class="text-sm opacity-40 mb-6 font-medium tracking-wide">${e.company || 'COMPANY'}</p><p class="text-xs lg:text-sm opacity-60 italic leading-relaxed max-w-2xl">${e.desc || '...'}</p></div></div>`).join('') || '<p class="opacity-10 py-10 uppercase tracking-[0.5em]">No Data Logs</p>';
+            cont.innerHTML = state.experience.map((e, i) => `<div onclick="openModal('experience', ${i})" class="group flex gap-8 lg:gap-12 cursor-pointer hover:translate-x-3 transition-all"><div class="w-24 lg:w-32 shrink-0 text-[11px] font-bold accent-text pt-1 mono uppercase tracking-tighter">${e.time || '20XX'}</div><div class="pb-12 border-l-2 border-white/10 pl-8 lg:pl-12 relative"><div class="absolute -left-[11px] top-1.5 w-5 h-5 rounded-full bg-white group-hover:bg-accent group-hover:scale-125 transition-all"></div><h4 class="text-2xl lg:text-3xl font-bold tracking-tight mb-3 uppercase">${e.role || 'ROLE'}</h4><p class="text-sm opacity-40 mb-6 font-medium tracking-wide">${e.company || 'COMPANY'}</p><p class="text-[11px] opacity-60 italic leading-relaxed max-w-2xl">${e.desc || '...'}</p></div></div>`).join('') || '<p class="opacity-10 py-10 uppercase tracking-[0.5em]">No Data Logs</p>';
         }
 
         function renderAssets() {
@@ -472,8 +493,22 @@
 
         function renderOutro() {
             document.getElementById('milestone-container').innerHTML = state.milestones.map((m, i) => `<div onclick="openModal('milestones', ${i})" class="flex items-center gap-3 text-xs font-bold uppercase tracking-widest text-yellow-500 cursor-pointer hover:scale-110 transition-all"><i class="fas fa-award"></i> ${m.text}</div>`).join('') || '<span class="opacity-10 text-[11px]">EMPTY</span>';
-            document.getElementById('portfolio-list').innerHTML = state.portfolio.map((p, i) => `<div onclick="openModal('portfolio', ${i})" class="group flex items-center justify-between p-6 bg-white/5 rounded-3xl border border-white/5 cursor-pointer hover:border-blue-400 transition-all"><div class="flex items-center gap-6"><i class="fas fa-layer-group opacity-30 group-hover:text-blue-400 transition-colors"></i><span class="text-sm font-bold uppercase tracking-widest">${p.title}</span></div><i class="fas fa-chevron-right text-[11px] opacity-20 group-hover:opacity-100 transition-all"></i></div>`).join('');
-            document.getElementById('links-container').innerHTML = state.socials.map((s, i) => `<div onclick="openModal('socials', ${i})" class="p-6 bg-white/5 rounded-3xl border border-white/10 cursor-pointer hover:border-purple-400 transition-all"><div class="flex items-center gap-6"><i class="${s.icon} text-lg opacity-30 group-hover:text-purple-400 transition-colors"></i><span class="text-sm font-bold uppercase tracking-widest">${s.label}</span></div></div>`).join('');
+            
+            // Enhanced portfolio cards
+            document.getElementById('portfolio-list').innerHTML = state.portfolio.map((p, i) => `
+                <div onclick="openModal('portfolio', ${i})" class="port-item group cursor-pointer">
+                    <div class="flex justify-between items-start">
+                        <i class="fas fa-layer-group text-lg opacity-30 group-hover:text-blue-400 transition-colors"></i>
+                        <i class="fas fa-arrow-right text-[10px] opacity-20 group-hover:opacity-100 group-hover:translate-x-1 transition-all"></i>
+                    </div>
+                    <div>
+                        <span class="text-[10px] font-bold opacity-30 uppercase tracking-[0.2em] mb-1 block">Work Node</span>
+                        <h4 class="text-sm font-bold uppercase tracking-widest leading-tight">${p.title}</h4>
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('links-container').innerHTML = state.socials.map((s, i) => `<div onclick="openModal('socials', ${i})" class="p-6 bg-white/5 rounded-3xl border border-white/5 cursor-pointer hover:border-purple-400 transition-all"><div class="flex items-center gap-6"><i class="${s.icon} text-lg opacity-30 group-hover:text-purple-400 transition-colors"></i><span class="text-sm font-bold uppercase tracking-widest">${s.label}</span></div></div>`).join('');
         }
 
         const SCHEMAS = { skills: ['name', 'icon'], experience: ['company', 'role', 'time', 'desc'], assets: ['name', 'desc', 'url'], milestones: ['text'], portfolio: ['title', 'url'], socials: ['label', 'icon', 'url'] };
@@ -510,10 +545,10 @@
             state.user.status = document.getElementById('user-status').innerText;
             state.user.loc = document.getElementById('user-loc').innerText;
             state.user.lang = document.getElementById('user-lang').innerText;
-            localStorage.setItem('skillport_v17_large_mobile', JSON.stringify(state));
+            localStorage.setItem('skillport_v18_mobile_large', JSON.stringify(state));
         }
 
-        function loadState() { const raw = localStorage.getItem('skillport_v17_large_mobile'); if(raw) { Object.assign(state, JSON.parse(raw)); applyFullTheme(); setMode(state.mode); } }
+        function loadState() { const raw = localStorage.getItem('skillport_v18_mobile_large'); if(raw) { Object.assign(state, JSON.parse(raw)); applyFullTheme(); setMode(state.mode); } }
 
         function syncLocal() { saveState(); const icon = document.getElementById('sync-icon'); icon.classList.add('fa-spin'); setTimeout(() => icon.classList.remove('fa-spin'), 800); }
 
